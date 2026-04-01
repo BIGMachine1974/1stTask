@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from pathlib import Path
 
 from claude_code_sdk import query, ClaudeCodeOptions, AgentDefinition
@@ -36,22 +37,27 @@ SUBAGENTS = [
     ),
 ]
 
+AGENT_NAMES = {"research", "writing", "devops"}
+
+
+@dataclass
+class AgentEvent:
+    """Structured event from the agent pipeline."""
+    type: str  # "text", "agent_start", "agent_stop", "tool_use"
+    content: str = ""
+    agent_name: str = ""
+
 
 async def run_agent(user_message: str, history: list[dict] | None = None):
-    """Run the Managing Agent with a user message and yield text chunks.
-
-    Args:
-        user_message: The new message from the user.
-        history: Prior conversation messages as [{"role": "user"|"assistant", "content": "..."}].
+    """Run the Managing Agent with a user message and yield AgentEvents.
 
     Yields:
-        Text chunks from the agent's response.
+        AgentEvent objects with type, content, and optional agent_name.
     """
-    # Build the prompt with conversation history for context
     prompt_parts = []
     if history:
         prompt_parts.append("Previous conversation:\n")
-        for msg in history[-20:]:  # Last 20 messages for context window management
+        for msg in history[-20:]:
             role = "User" if msg["role"] == "user" else "Assistant"
             prompt_parts.append(f"{role}: {msg['content']}\n\n")
         prompt_parts.append("---\n\n")
@@ -68,8 +74,26 @@ async def run_agent(user_message: str, history: list[dict] | None = None):
             agents=SUBAGENTS,
         ),
     ):
+        # Detect subagent start/stop events
+        event_type = getattr(event, "type", "")
+        if event_type == "agent" and hasattr(event, "agent"):
+            agent_name = getattr(event.agent, "name", "")
+            status = getattr(event, "status", "")
+            if status == "start":
+                yield AgentEvent(type="agent_start", agent_name=agent_name)
+            elif status == "stop":
+                yield AgentEvent(type="agent_stop", agent_name=agent_name)
+            continue
+
+        # Text content from the agent
         if hasattr(event, "content"):
-            # event.content is a list of content blocks
             for block in event.content:
                 if hasattr(block, "text"):
-                    yield block.text
+                    yield AgentEvent(type="text", content=block.text)
+
+        # Tool use events (for status display)
+        if hasattr(event, "tool_name"):
+            yield AgentEvent(
+                type="tool_use",
+                content=getattr(event, "tool_name", ""),
+            )

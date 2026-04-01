@@ -34,7 +34,6 @@ async def _save_message(session_id: uuid.UUID, role: str, content: str) -> None:
     """Save a message to the database."""
     async with async_session() as db:
         db.add(Message(session_id=session_id, role=role, content=content))
-        # Update session title from first user message
         if role == "user":
             session = await db.get(Session, session_id)
             if session and session.title is None:
@@ -61,23 +60,38 @@ async def websocket_chat(websocket: WebSocket, session_id: uuid.UUID):
             if not user_message.strip():
                 continue
 
-            # Save user message
             await _save_message(session_id, "user", user_message)
-
-            # Reload history for agent context
             history = await _load_history(session_id)
 
-            # Stream agent response
+            # Stream agent response with structured events
             full_response = []
             try:
-                async for chunk in run_agent(user_message, history[:-1]):  # Exclude the just-sent message
-                    full_response.append(chunk)
-                    await websocket.send_text(json.dumps({"type": "token", "content": chunk}))
+                async for event in run_agent(user_message, history[:-1]):
+                    if event.type == "text":
+                        full_response.append(event.content)
+                        await websocket.send_text(json.dumps({
+                            "type": "token",
+                            "content": event.content,
+                        }))
+                    elif event.type == "agent_start":
+                        await websocket.send_text(json.dumps({
+                            "type": "agent_start",
+                            "agent": event.agent_name,
+                        }))
+                    elif event.type == "agent_stop":
+                        await websocket.send_text(json.dumps({
+                            "type": "agent_stop",
+                            "agent": event.agent_name,
+                        }))
+                    elif event.type == "tool_use":
+                        await websocket.send_text(json.dumps({
+                            "type": "tool_use",
+                            "tool": event.content,
+                        }))
             except Exception as e:
                 await websocket.send_text(json.dumps({"type": "error", "content": str(e)}))
                 continue
 
-            # Save assistant response
             assistant_content = "".join(full_response)
             if assistant_content:
                 await _save_message(session_id, "assistant", assistant_content)

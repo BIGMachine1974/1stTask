@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { Message, WebSocketMessage } from "../types";
+import type { AgentStatus, Message, WebSocketMessage } from "../types";
 
 function makeId(): string {
   return crypto.randomUUID();
@@ -9,6 +9,8 @@ export function useWebSocket(sessionId: string) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [activeAgents, setActiveAgents] = useState<AgentStatus[]>([]);
+  const [lastTool, setLastTool] = useState<string | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const streamBufferRef = useRef("");
 
@@ -21,6 +23,7 @@ export function useWebSocket(sessionId: string) {
     ws.onclose = () => {
       setIsConnected(false);
       setIsStreaming(false);
+      setActiveAgents([]);
     };
 
     ws.onmessage = (event) => {
@@ -42,7 +45,7 @@ export function useWebSocket(sessionId: string) {
         streamBufferRef.current += data.content;
         setMessages((prev) => {
           const last = prev[prev.length - 1];
-          if (last && last.role === "assistant" && isStreaming) {
+          if (last && last.role === "assistant") {
             return [
               ...prev.slice(0, -1),
               { ...last, content: streamBufferRef.current },
@@ -60,13 +63,36 @@ export function useWebSocket(sessionId: string) {
         });
       }
 
+      if (data.type === "agent_start" && data.agent) {
+        setActiveAgents((prev) => [
+          ...prev.filter((a) => a.name !== data.agent),
+          { name: data.agent!, active: true },
+        ]);
+      }
+
+      if (data.type === "agent_stop" && data.agent) {
+        setActiveAgents((prev) =>
+          prev.map((a) =>
+            a.name === data.agent ? { ...a, active: false } : a
+          )
+        );
+      }
+
+      if (data.type === "tool_use" && data.tool) {
+        setLastTool(data.tool);
+      }
+
       if (data.type === "done") {
         setIsStreaming(false);
+        setActiveAgents([]);
+        setLastTool(null);
         streamBufferRef.current = "";
       }
 
       if (data.type === "error") {
         setIsStreaming(false);
+        setActiveAgents([]);
+        setLastTool(null);
         streamBufferRef.current = "";
         setMessages((prev) => [
           ...prev,
@@ -85,24 +111,21 @@ export function useWebSocket(sessionId: string) {
     };
   }, [sessionId]);
 
-  const sendMessage = useCallback(
-    (content: string) => {
-      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+  const sendMessage = useCallback((content: string) => {
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
 
-      const userMsg: Message = {
-        id: makeId(),
-        role: "user",
-        content,
-        createdAt: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, userMsg]);
-      setIsStreaming(true);
-      streamBufferRef.current = "";
+    const userMsg: Message = {
+      id: makeId(),
+      role: "user",
+      content,
+      createdAt: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, userMsg]);
+    setIsStreaming(true);
+    streamBufferRef.current = "";
 
-      wsRef.current.send(JSON.stringify({ content }));
-    },
-    []
-  );
+    wsRef.current.send(JSON.stringify({ content }));
+  }, []);
 
-  return { messages, sendMessage, isConnected, isStreaming };
+  return { messages, sendMessage, isConnected, isStreaming, activeAgents, lastTool };
 }
