@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Team — UI Mockup</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #111827; color: #f3f4f6; height: 100dvh; display: flex; overflow: hidden; }
+
+  /* Sidebar */
+  .sidebar { width: 288px; background: #1f2937; display: flex; flex-direction: column; border-right: 1px solid #374151; flex-shrink: 0; }
+  .sidebar-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #374151; }
+  .sidebar-header h2 { font-size: 14px; color: #d1d5db; font-weight: 600; }
+  .btn-new { background: #2563eb; color: white; border: none; padding: 4px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 500; }
+  .btn-new:hover { background: #3b82f6; }
+  .session-list { flex: 1; overflow-y: auto; }
+  .session-item { padding: 12px 16px; border-bottom: 1px solid rgba(55,65,81,0.5); cursor: pointer; transition: background 0.15s; }
+  .session-item:hover { background: #374151; }
+  .session-item.active { background: #374151; }
+  .session-title { font-size: 14px; color: #e5e7eb; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .session-date { font-size: 11px; color: #6b7280; margin-top: 2px; }
+
+  /* Knowledge panel */
+  .knowledge-panel { border-top: 1px solid #374151; padding: 12px 16px; }
+  .knowledge-panel h3 { font-size: 13px; color: #d1d5db; font-weight: 600; }
+  .knowledge-desc { font-size: 11px; color: #6b7280; margin-top: 6px; line-height: 1.4; }
+  .knowledge-cli { margin-top: 8px; background: #111827; border-radius: 8px; padding: 8px 12px; }
+  .knowledge-cli code { font-size: 11px; color: #4ade80; font-family: 'SF Mono', Monaco, monospace; }
+  .format-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+  .format-tag { background: #374151; color: #9ca3af; font-size: 11px; padding: 2px 6px; border-radius: 4px; }
+
+  /* Main area */
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+  /* Header */
+  .header { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; border-bottom: 1px solid #374151; }
+  .header-left h1 { font-size: 18px; font-weight: 600; }
+  .header-left p { font-size: 12px; color: #9ca3af; }
+  .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+  .status-dot.online { background: #22c55e; }
+  .header-right { display: flex; align-items: center; font-size: 12px; color: #9ca3af; }
+
+  /* Agent status bar */
+  .agent-bar { display: flex; align-items: center; gap: 12px; padding: 8px 24px; border-bottom: 1px solid #374151; background: rgba(31,41,55,0.5); font-size: 13px; }
+  .agent-bar .label { color: #6b7280; }
+  .agent-bar .agent-name { font-weight: 500; }
+  .agent-bar .agent-name.manager { color: #a78bfa; }
+  .agent-bar .agent-name.research { color: #60a5fa; }
+  .agent-bar .agent-name.writing { color: #4ade80; }
+  .agent-bar .agent-name.devops { color: #fb923c; }
+  .agent-bar .separator { color: #4b5563; }
+  .agent-bar .tool-info { color: #9ca3af; }
+  .agent-bar .tool-info code { background: #374151; padding: 1px 6px; border-radius: 4px; font-size: 11px; font-family: 'SF Mono', Monaco, monospace; }
+  .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; margin-left: auto; animation: pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  /* Messages */
+  .messages { flex: 1; overflow-y: auto; padding: 20px 24px; }
+  .message { display: flex; margin-bottom: 16px; }
+  .message.user { justify-content: flex-end; }
+  .message.assistant { justify-content: flex-start; }
+  .bubble { max-width: 75%; padding: 12px 16px; border-radius: 16px; line-height: 1.5; font-size: 14px; }
+  .message.user .bubble { background: #2563eb; color: white; border-bottom-right-radius: 4px; }
+  .message.assistant .bubble { background: #374151; color: #f3f4f6; border-bottom-left-radius: 4px; }
+  .bubble .time { font-size: 11px; margin-top: 4px; opacity: 0.5; }
+  .bubble p { margin-bottom: 8px; }
+  .bubble p:last-child { margin-bottom: 0; }
+  .bubble strong { color: #93c5fd; }
+  .bubble code { background: rgba(0,0,0,0.3); padding: 1px 5px; border-radius: 4px; font-size: 13px; font-family: 'SF Mono', Monaco, monospace; }
+  .bubble ul { margin: 4px 0 8px 20px; }
+  .bubble li { margin-bottom: 4px; }
+
+  /* Typing indicator */
+  .typing { display: flex; justify-content: flex-start; margin-bottom: 16px; }
+  .typing .bubble { color: #9ca3af; animation: pulse 1.5s ease-in-out infinite; }
+
+  /* Input area */
+  .input-area { padding: 16px 24px; border-top: 1px solid #374151; display: flex; gap: 12px; }
+  .input-area textarea { flex: 1; background: #1f2937; border: 1px solid #4b5563; border-radius: 12px; color: white; padding: 12px 16px; font-size: 14px; font-family: inherit; resize: none; outline: none; }
+  .input-area textarea:focus { border-color: #3b82f6; }
+  .input-area textarea::placeholder { color: #6b7280; }
+  .btn-send { background: #2563eb; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; cursor: pointer; }
+  .btn-send:hover { background: #3b82f6; }
+
+  /* Demo tabs */
+  .demo-tabs { display: flex; gap: 0; border-bottom: 2px solid #374151; padding: 0 24px; background: #0f172a; }
+  .demo-tab { padding: 10px 20px; font-size: 13px; cursor: pointer; border: none; background: none; color: #6b7280; font-weight: 500; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.15s; }
+  .demo-tab:hover { color: #d1d5db; }
+  .demo-tab.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+
+  /* Mobile hint */
+  .mobile-hint { display: none; background: #1e3a5f; color: #93c5fd; padding: 8px 16px; font-size: 12px; text-align: center; }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .mobile-hint { display: block; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-header">
+    <h2>Conversations</h2>
+    <button class="btn-new">+ New</button>
+  </div>
+  <div class="session-list">
+    <div class="session-item active">
+      <div class="session-title">Help me plan the Q2 product roadmap</div>
+      <div class="session-date">Today, 2:34 PM</div>
+    </div>
+    <div class="session-item">
+      <div class="session-title">Debug the auth middleware issue</div>
+      <div class="session-date">Today, 11:15 AM</div>
+    </div>
+    <div class="session-item">
+      <div class="session-title">Write investor update email</div>
+      <div class="session-date">Yesterday</div>
+    </div>
+    <div class="session-item">
+      <div class="session-title">Set up CI/CD for the new API</div>
+      <div class="session-date">Mar 29</div>
+    </div>
+    <div class="session-item">
+      <div class="session-title">Research competitor pricing models</div>
+      <div class="session-date">Mar 28</div>
+    </div>
+  </div>
+  <div class="knowledge-panel">
+    <h3>📚 Knowledge Base</h3>
+    <div class="knowledge-desc">Your past work is loaded and searchable by all agents.</div>
+    <div class="knowledge-cli"><code>python scripts/ingest.py /path/to/data</code></div>
+    <div class="format-tags">
+      <span class="format-tag">.json</span>
+      <span class="format-tag">.md</span>
+      <span class="format-tag">.txt</span>
+      <span class="format-tag">.pdf</span>
+      <span class="format-tag">.py</span>
+      <span class="format-tag">.js</span>
+      <span class="format-tag">.ts</span>
+    </div>
+  </div>
+</div>
+
+<!-- Main chat area -->
+<div class="main">
+  <!-- Demo view switcher -->
+  <div class="demo-tabs">
+    <button class="demo-tab active" onclick="showView('chat')">Chat View</button>
+    <button class="demo-tab" onclick="showView('research')">Research Delegation</button>
+    <button class="demo-tab" onclick="showView('multi')">Multi-Agent</button>
+  </div>
+
+  <div class="mobile-hint">Resize your browser to see the mobile layout</div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1>Agent Team</h1>
+      <p>Managing Agent + Research, Writing, DevOps</p>
+    </div>
+    <div class="header-right">
+      <span class="status-dot online"></span>
+      Connected
+    </div>
+  </div>
+
+  <!-- Agent status bar -->
+  <div class="agent-bar" id="agent-bar">
+    <span class="label">Active:</span>
+    <span class="agent-name research">Research</span>
+    <span class="separator">|</span>
+    <span class="tool-info">using <code>knowledge_search</code></span>
+    <span class="pulse-dot"></span>
+  </div>
+
+  <!-- Messages area -->
+  <div class="messages" id="messages-chat">
+    <div class="message user">
+      <div class="bubble">
+        <p>Help me plan the Q2 product roadmap. Check what we discussed last quarter about priorities.</p>
+        <div class="time">2:34 PM</div>
+      </div>
+    </div>
+    <div class="message assistant">
+      <div class="bubble">
+        <p>I checked the knowledge base and found your Q1 planning notes. Here's what you prioritized last quarter:</p>
+        <ul>
+          <li><strong>Auth system overhaul</strong> — completed in February</li>
+          <li><strong>API v2 migration</strong> — 80% done, carrying over</li>
+          <li><strong>Mobile app MVP</strong> — pushed to Q2</li>
+        </ul>
+        <p>Based on that context, I'm having the <strong>Research Agent</strong> look into current market trends for your space, and I'll draft a roadmap structure. Here's what I recommend for Q2:</p>
+        <p><strong>Must-haves:</strong></p>
+        <ul>
+          <li>Finish API v2 migration (carryover)</li>
+          <li>Mobile app MVP launch</li>
+          <li>Usage analytics dashboard</li>
+        </ul>
+        <p><strong>Nice-to-haves:</strong></p>
+        <ul>
+          <li>Team collaboration features</li>
+          <li>Webhook integrations</li>
+        </ul>
+        <p>Want me to have the <strong>Writing Agent</strong> turn this into a formal roadmap document?</p>
+        <div class="time">2:35 PM</div>
+      </div>
+    </div>
+    <div class="message user">
+      <div class="bubble">
+        <p>Yes, make it a proper doc I can share with the team.</p>
+        <div class="time">2:36 PM</div>
+      </div>
+    </div>
+    <div class="typing">
+      <div class="bubble">Writing Agent is drafting the document...</div>
+    </div>
+  </div>
+
+  <!-- Research delegation view -->
+  <div class="messages" id="messages-research" style="display:none">
+    <div class="message user">
+      <div class="bubble">
+        <p>What are the best practices for rate limiting in API design in 2026?</p>
+        <div class="time">11:15 AM</div>
+      </div>
+    </div>
+    <div class="message assistant">
+      <div class="bubble">
+        <p>I'm delegating this to the <strong>Research Agent</strong> — it'll search for current best practices and check if you have any existing rate limiting patterns in the knowledge base.</p>
+        <div class="time">11:15 AM</div>
+      </div>
+    </div>
+    <div class="message assistant">
+      <div class="bubble">
+        <p>Here's what the Research Agent found:</p>
+        <p><strong>From your knowledge base:</strong> You implemented token bucket rate limiting in your <code>api-gateway</code> project last October using Redis. That pattern is still solid.</p>
+        <p><strong>Current best practices (2026):</strong></p>
+        <ul>
+          <li><strong>Sliding window counters</strong> are now preferred over fixed windows — more fair to users</li>
+          <li><strong>Response headers</strong> — always include <code>X-RateLimit-Remaining</code>, <code>X-RateLimit-Reset</code>, and <code>Retry-After</code></li>
+          <li><strong>Tiered limits</strong> by plan/role are standard, not just global limits</li>
+          <li><strong>GraphQL-specific</strong> — rate limit by query complexity, not just request count</li>
+        </ul>
+        <p>Your existing Redis + token bucket approach is a strong foundation. The main upgrade would be switching to sliding windows and adding per-endpoint tiers.</p>
+        <p>Want the <strong>DevOps Agent</strong> to draft an updated implementation?</p>
+        <div class="time">11:16 AM</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multi-agent view -->
+  <div class="messages" id="messages-multi" style="display:none">
+    <div class="message user">
+      <div class="bubble">
+        <p>I need to set up CI/CD for the new payments API. Research what other fintech startups use, write the documentation, and set up the GitHub Actions config.</p>
+        <div class="time">3:00 PM</div>
+      </div>
+    </div>
+    <div class="message assistant">
+      <div class="bubble">
+        <p>This is a great multi-agent task. I'm coordinating all three specialists:</p>
+        <p><strong>Research Agent</strong> — Investigating CI/CD patterns used by fintech startups, focusing on security and compliance requirements for payment systems.</p>
+        <p><strong>Writing Agent</strong> — Will draft the CI/CD documentation once research is complete.</p>
+        <p><strong>DevOps Agent</strong> — Will create the GitHub Actions workflow files based on research findings and your existing repo structure.</p>
+        <p>I checked your knowledge base — you have an existing GitHub Actions setup in the <code>main-api</code> repo from last year. The DevOps Agent will use that as a starting template and adapt it for the payments service.</p>
+        <p>I'll synthesize everything and present the full package when all three are done. Should take a moment...</p>
+        <div class="time">3:01 PM</div>
+      </div>
+    </div>
+    <div class="message assistant">
+      <div class="bubble">
+        <p>All three agents have reported back. Here's the full picture:</p>
+        <p><strong>Research findings:</strong> Most fintech CI/CD pipelines include mandatory SAST scanning (Semgrep or Snyk), dependency auditing, and separate staging environments for PCI compliance. The standard is GitHub Actions + ArgoCD for deployment.</p>
+        <p><strong>Documentation:</strong> The Writing Agent created <code>docs/ci-cd-pipeline.md</code> covering the pipeline stages, environment setup, and runbook for common failures.</p>
+        <p><strong>Implementation:</strong> The DevOps Agent created:</p>
+        <ul>
+          <li><code>.github/workflows/ci.yml</code> — lint, test, security scan</li>
+          <li><code>.github/workflows/deploy-staging.yml</code> — auto-deploy to staging on PR merge</li>
+          <li><code>.github/workflows/deploy-prod.yml</code> — manual approval gate for production</li>
+        </ul>
+        <p>Want me to push these files to the repo?</p>
+        <div class="time">3:04 PM</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input area -->
+  <div class="input-area">
+    <textarea rows="1" placeholder="Type a message..."></textarea>
+    <button class="btn-send">Send</button>
+  </div>
+</div>
+
+<script>
+function showView(view) {
+  document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.messages').forEach(m => m.style.display = 'none');
+
+  if (view === 'chat') {
+    document.getElementById('messages-chat').style.display = 'block';
+    document.getElementById('agent-bar').querySelector('.agent-name').textContent = 'Research';
+    document.getElementById('agent-bar').querySelector('.agent-name').className = 'agent-name research';
+    document.getElementById('agent-bar').querySelector('.tool-info code').textContent = 'knowledge_search';
+  } else if (view === 'research') {
+    document.getElementById('messages-research').style.display = 'block';
+    document.getElementById('agent-bar').querySelector('.agent-name').textContent = 'Research';
+    document.getElementById('agent-bar').querySelector('.agent-name').className = 'agent-name research';
+    document.getElementById('agent-bar').querySelector('.tool-info code').textContent = 'web_search';
+  } else if (view === 'multi') {
+    document.getElementById('messages-multi').style.display = 'block';
+    document.getElementById('agent-bar').querySelector('.agent-name').textContent = 'DevOps';
+    document.getElementById('agent-bar').querySelector('.agent-name').className = 'agent-name devops';
+    document.getElementById('agent-bar').querySelector('.tool-info code').textContent = 'write_file';
+  }
+
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
