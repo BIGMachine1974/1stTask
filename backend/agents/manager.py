@@ -5,6 +5,14 @@ from claude_code_sdk import query, ClaudeCodeOptions, AgentDefinition
 
 from backend.config import settings
 from backend.mcp_servers.knowledge_server import knowledge_search
+from backend.mcp_servers.decisions_server import (
+    log_decision, record_feedback, get_criteria,
+    save_preference, get_preferences, get_recent_decisions,
+)
+from backend.mcp_servers.google_workspace import (
+    gmail_get_recent, gmail_read_email, gmail_draft_reply,
+    calendar_get_events, calendar_create_event, calendar_find_free_time,
+)
 from backend.agents.research import AGENT_CONFIG as RESEARCH_CONFIG
 from backend.agents.writing import AGENT_CONFIG as WRITING_CONFIG
 from backend.agents.devops import AGENT_CONFIG as DEVOPS_CONFIG
@@ -12,8 +20,17 @@ from backend.agents.devops import AGENT_CONFIG as DEVOPS_CONFIG
 PROMPT_PATH = Path(__file__).parent / "prompts" / "manager.md"
 SYSTEM_PROMPT = PROMPT_PATH.read_text()
 
-# Knowledge search available directly to the manager
-CUSTOM_TOOLS = [knowledge_search]
+# All tools available to the Chief of Staff
+CUSTOM_TOOLS = [
+    # Knowledge base
+    knowledge_search,
+    # Decision framework
+    log_decision, record_feedback, get_criteria,
+    save_preference, get_preferences, get_recent_decisions,
+    # Google Workspace
+    gmail_get_recent, gmail_read_email, gmail_draft_reply,
+    calendar_get_events, calendar_create_event, calendar_find_free_time,
+]
 
 # Specialist subagents
 SUBAGENTS = [
