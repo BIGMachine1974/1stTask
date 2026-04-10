@@ -1,0 +1,25 @@
+run = "cd backend && uvicorn main:app --host 0.0.0.0 --port 8080"
+entrypoint = "backend/main.py"
+
+[env]
+PYTHONPATH = "/home/runner/${REPL_SLUG}"
+
+[nix]
+channel = "stable-24_05"
+
+[nix.packages]
+pkgs = ["python312", "nodejs_22", "postgresql"]
+
+[languages.python]
+pattern = "**/*.py"
+
+[languages.python.languageServer]
+start = "pylsp"
+
+[deployment]
+run = "cd backend && uvicorn main:app --host 0.0.0.0 --port 8080"
+deploymentTarget = "cloudrun"
+
+[[ports]]
+localPort = 8080
+externalPort = 80
