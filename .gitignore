@@ -23,3 +23,6 @@ data/
 
 # OS
 .DS_Store
+
+# motion-broll working folder (renders, clips)
+motion/

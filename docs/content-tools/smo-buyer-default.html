@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>When a Buyer Walks Away</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Montserrat:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      /* SecureMyOffer skin, onboarded from securemyoffer.com */
+      --color-paper:   #f7f4ee;   /* warm bone */
+      --color-ink:     #1a1b1f;   /* SMO text */
+      --color-muted:   #5c5448;   /* warm slate */
+      --color-accent:  #7d5f27;   /* SMO gold #cca565, darkened to 5.4:1 */
+      --color-gold:    #cca565;   /* raw brand gold, decorative only */
+      --font-sans:     'Montserrat', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1rem;
+    }
+
+    .frame { max-width: 1000px; width: 100%; }
+    .diagram-container { width: 100%; overflow-x: auto; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--color-gold);
+      display: inline-block;
+    }
+
+    svg { width: 100%; min-width: 960px; display: block; }
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Flowchart · SecureMyOffer</p>
+    <h1>When a buyer walks away</h1>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 960 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="smo-buyer-default-title smo-buyer-default-desc">
+        <title id="smo-buyer-default-title">When a buyer walks away</title>
+        <desc id="smo-buyer-default-desc">Flowchart comparing what a seller faces after a buyer defaults on a firm deal without coverage versus with SecureMyOffer home closing insurance.</desc>
+        <defs>
+          <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#5c5448"/></marker>
+          <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#7d5f27"/></marker>
+        </defs>
+
+        <rect width="100%" height="100%" fill="#f7f4ee"/>
+
+        <!-- Arrows (drawn first, behind nodes) -->
+        <!-- Start -> Buyer defaults -->
+        <line x1="480" y1="80" x2="480" y2="120" stroke="#5c5448" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <!-- Buyer defaults -> left branch (no coverage) -->
+        <path d="M448 176 V204 Q448 212 440 212 H218 Q210 212 210 220 V260" fill="none" stroke="#5c5448" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <!-- Buyer defaults -> right branch (with SMO) -->
+        <path d="M512 176 V204 Q512 212 520 212 H742 Q750 212 750 220 V260" fill="none" stroke="#7d5f27" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+        <!-- Left column -->
+        <line x1="210" y1="316" x2="210" y2="356" stroke="#5c5448" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <!-- Right column -->
+        <line x1="750" y1="316" x2="750" y2="356" stroke="#7d5f27" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+        <line x1="750" y1="412" x2="750" y2="452" stroke="#7d5f27" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+        <line x1="750" y1="508" x2="750" y2="548" stroke="#7d5f27" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+
+        <!-- Arrow labels (masked, 8px above their segment) -->
+        <rect x="292" y="192" width="76" height="12" rx="2" fill="#f7f4ee"/>
+        <text x="330" y="201" fill="#5c5448" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">NO COVERAGE</text>
+
+        <rect x="600" y="192" width="64" height="12" rx="2" fill="#f7f4ee"/>
+        <text x="632" y="201" fill="#7d5f27" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">WITH SMO</text>
+
+        <!-- Start oval -->
+        <rect x="380" y="32" width="200" height="48" rx="20" fill="#f7f4ee"/>
+        <rect x="380" y="32" width="200" height="48" rx="20" fill="rgba(26,27,31,0.03)" stroke="rgba(26,27,31,0.30)" stroke-width="1"/>
+        <text x="480" y="60" fill="#1a1b1f" font-size="12" font-weight="600" font-family="'Montserrat', sans-serif" text-anchor="middle">Firm deal signed</text>
+
+        <!-- Focal: Buyer defaults -->
+        <rect x="380" y="120" width="200" height="56" rx="6" fill="#f7f4ee"/>
+        <rect x="380" y="120" width="200" height="56" rx="6" fill="rgba(125,95,39,0.08)" stroke="#7d5f27" stroke-width="1.2"/>
+        <text x="480" y="146" fill="#1a1b1f" font-size="12" font-weight="600" font-family="'Montserrat', sans-serif" text-anchor="middle">Buyer defaults</text>
+        <text x="480" y="162" fill="#5c5448" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">walks away or can't close</text>
+
+        <!-- Left: deposit frozen -->
+        <rect x="60" y="260" width="300" height="56" rx="6" fill="#ffffff" stroke="#1a1b1f" stroke-width="1"/>
+        <text x="210" y="286" fill="#1a1b1f" font-size="12" font-weight="600" font-family="'Montserrat', sans-serif" text-anchor="middle">Deposit frozen in trust</text>
+        <text x="210" y="302" fill="#5c5448" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">consent or court order · 6–18 months</text>
+
+        <!-- Left end: seller carries the loss -->
+        <rect x="60" y="356" width="300" height="56" rx="20" fill="rgba(26,27,31,0.03)" stroke="rgba(26,27,31,0.30)" stroke-width="1"/>
+        <text x="210" y="382" fill="#1a1b1f" font-size="12" font-weight="600" font-family="'Montserrat', sans-serif" text-anchor="middle">Seller carries the loss</text>
+        <text x="210" y="398" fill="#5c5448" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">carrying costs · relisting · lower price</text>
+
+        <!-- Right 1: deposit advanced + legal -->
+        <rect x="600" y="260" width="300" height="56" rx="6" fill="#ffffff" stroke="#1a1b1f" stroke-width="1"/>
+        <text x="750" y="286" fill="#1a1b1f" font-size="12" font-weight="600" font-family="'Montserrat', sans-serif" text-anchor="middle">Deposit advanced, legal fight funded</text>
+        <text x="750" y="302" fill="#5c5448" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">while the buyer is pursued</text>
+
+        <!-- Right 2: carrying + relisting -->
+        <rect x="600" y="356" width="300" height="56" rx="6" fill="#ffffff" stroke="#1a1b1f" stroke-width="1"/>
+        <text x="750" y="382" fill="#1a1b1f" font-size="12" font-weight="600" font-family="'Montserrat', sans-serif" text-anchor="middle">Carrying and relisting costs paid</text>
+        <text x="750" y="398" fill="#5c5448" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">mortgage · taxes · staging · photos</text>
+
+        <!-- Right 3: resale shortfall -->
+        <rect x="600" y="452" width="300" height="56" rx="6" fill="#ffffff" stroke="#1a1b1f" stroke-width="1"/>
+        <text x="750" y="478" fill="#1a1b1f" font-size="12" font-weight="600" font-family="'Montserrat', sans-serif" text-anchor="middle">Resale shortfall covered</text>
+        <text x="750" y="494" fill="#5c5448" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">if the home resells for less</text>
+
+        <!-- Right end (focal): move goes ahead -->
+        <rect x="600" y="548" width="300" height="56" rx="20" fill="#f7f4ee"/>
+        <rect x="600" y="548" width="300" height="56" rx="20" fill="rgba(125,95,39,0.08)" stroke="#7d5f27" stroke-width="1.2"/>
+        <text x="750" y="574" fill="#1a1b1f" font-size="12" font-weight="600" font-family="'Montserrat', sans-serif" text-anchor="middle">Your move can still go ahead</text>
+        <text x="750" y="590" fill="#5c5448" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">a higher resale price is yours to keep</text>
+
+        <!-- Callout (italic serif) -->
+        <text fill="#5c5448" font-size="14" font-style="italic" font-family="'Instrument Serif', serif">
+          <tspan x="60" y="476">What's covered depends on the protection</tspan>
+          <tspan x="60" y="496">you choose. Every payment is subject to</tspan>
+          <tspan x="60" y="516">policy limits. Not available in Quebec.</tspan>
+        </text>
+
+        <!-- Legend -->
+        <line x1="60" y1="636" x2="900" y2="636" stroke="rgba(26,27,31,0.12)" stroke-width="0.8"/>
+        <text x="60" y="652" fill="#5c5448" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND · SHAPE CARRIES TYPE</text>
+
+        <rect x="60" y="668" width="24" height="12" rx="6" fill="rgba(26,27,31,0.03)" stroke="rgba(26,27,31,0.30)" stroke-width="1"/>
+        <text x="92" y="678" fill="#5c5448" font-size="8.5" font-family="'Montserrat', sans-serif">Start / outcome</text>
+
+        <rect x="240" y="668" width="24" height="12" rx="2" fill="#ffffff" stroke="#1a1b1f" stroke-width="1"/>
+        <text x="272" y="678" fill="#5c5448" font-size="8.5" font-family="'Montserrat', sans-serif">What happens</text>
+
+        <line x1="420" y1="676" x2="448" y2="676" stroke="#7d5f27" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+        <text x="456" y="678" fill="#5c5448" font-size="8.5" font-family="'Montserrat', sans-serif">With SecureMyOffer</text>
+
+        <line x1="600" y1="676" x2="628" y2="676" stroke="#5c5448" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <text x="636" y="678" fill="#5c5448" font-size="8.5" font-family="'Montserrat', sans-serif">Without coverage</text>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>
