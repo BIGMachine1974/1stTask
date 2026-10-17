@@ -1,0 +1,374 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style rel="stylesheet" type="text/css">@charset "utf-8";
+
+:root { --green: #2f5d46; --ink: #1f2a24; --grey: #5b6b62; --fill: #f4f7f5; --line: #c9d3cd; --bg: #fbfcfb; --warn: #a4452c; color-scheme: light; }
+
+* { box-sizing: border-box; }
+
+body { margin: 0px; background: var(--bg); color: var(--ink); font: 16px / 1.5 "Helvetica Neue", Helvetica, Arial, sans-serif; text-size-adjust: 100%; }
+
+header { background: var(--green); color: rgb(255, 255, 255); padding: 36px 16px 30px; }
+
+header .in, main, footer .in { max-width: 720px; margin: 0px auto; }
+
+header h1 { margin: 0px; font-size: clamp(24px, 5vw, 32px); line-height: 1.2; font-weight: 700; }
+
+header p { margin: 6px 0px 0px; color: rgb(214, 228, 220); font-size: 15px; }
+
+.bar { position: sticky; top: 0px; z-index: 5; background: rgb(255, 255, 255); border-bottom: 1px solid var(--line); }
+
+.bar .in { max-width: 720px; margin: 0px auto; padding: 8px 16px; display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--grey); }
+
+.track { flex: 1 1 0%; height: 6px; border-radius: 3px; background: var(--fill); overflow: hidden; }
+
+.track i { display: block; height: 100%; width: 0px; background: var(--green); transition: width 0.3s; }
+
+main { padding: 24px 16px 40px; }
+
+.intro { background: var(--fill); border-top-color: ; border-top-style: ; border-top-width: ; border-right-color: ; border-right-style: ; border-right-width: ; border-bottom-color: ; border-bottom-style: ; border-bottom-width: ; border-image-source: ; border-image-slice: ; border-image-width: ; border-image-outset: ; border-image-repeat: ; border-left: 4px solid var(--green); padding: 14px 16px; margin: 0px 0px 8px; }
+
+.intro p { margin: 0px; }
+
+.saved { font-size: 13px; color: var(--grey); margin: 0px 0px 8px; }
+
+.sec { margin-top: 36px; }
+
+.sec h2 { color: var(--green); font-size: 20px; font-weight: 700; margin: 0px 0px 6px; padding-bottom: 8px; border-bottom: 1px solid var(--green); }
+
+fieldset.q { border-width: 1px 0px 0px; border-style: solid none none; border-color: rgb(227, 233, 229) currentcolor currentcolor; border-image: none; margin: 0px; padding: 26px 0px; min-width: 0px; scroll-margin-top: 48px; }
+
+.sec h2 + fieldset.q { border-top: 0px; padding-top: 18px; }
+
+legend { font-weight: 700; font-size: 16px; padding: 0px; margin: 0px 0px 10px; float: left; width: 100%; }
+
+legend + * { clear: both; }
+
+legend .n { color: var(--green); }
+
+.hint { font-weight: 400; color: var(--grey); margin-left: 4px; }
+
+.req { display: inline-block; margin-left: 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--green); border: 1px solid var(--green); border-radius: 3px; padding: 0px 5px; vertical-align: 2px; }
+
+.sub { display: block; font-size: 13px; font-style: italic; color: var(--grey); margin: 10px 0px 4px; }
+
+input[type="text"], textarea, select { width: 100%; font: inherit; color: var(--ink); background: var(--fill); border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px; }
+
+textarea { resize: vertical; min-height: 84px; }
+
+input:focus, textarea:focus, select:focus { outline: 2px solid var(--green); outline-offset: 1px; background: rgb(255, 255, 255); }
+
+.opts { display: grid; gap: 6px; }
+
+.opts.row { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+
+.opts.grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+
+.opt { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 4px; background: rgb(255, 255, 255); cursor: pointer; font-size: 15px; line-height: 1.3; }
+
+.opt:has(input:checked) { border-color: var(--green); background: var(--fill); }
+
+.opt input, .scale input { accent-color: var(--green); width: 18px; height: 18px; margin: 0px; flex: 0 0 auto; }
+
+.other { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+
+.other label { font-size: 15px; flex: 0 0 auto; }
+
+.scale { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+
+.scale .opt { padding: 9px 14px; }
+
+.scale .end { font-size: 13px; color: var(--grey); }
+
+.ranks { display: grid; gap: 6px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+.rank { display: flex; align-items: center; gap: 10px; font-size: 15px; }
+
+.rank select { width: 64px; flex: 0 0 auto; padding: 8px; }
+
+.warn { color: var(--warn); font-size: 13px; margin: 6px 0px 0px; }
+
+.upload { border: 1px dashed var(--line); border-radius: 4px; padding: 12px; background: rgb(255, 255, 255); }
+
+.pick { display: inline-flex; cursor: pointer; }
+
+.pick input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+
+.pick span { display: inline-block; background: var(--green); color: rgb(255, 255, 255); font-weight: 700; font-size: 14px; padding: 8px 16px; border-radius: 4px; }
+
+.pick:focus-within span { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.note { font-size: 13px; color: var(--grey); margin-left: 10px; }
+
+.files { list-style: none; margin: 8px 0px; padding: 0px; font-size: 14px; }
+
+.files li { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0px; border-bottom: 1px solid var(--fill); overflow-wrap: anywhere; }
+
+.files button { border: 0px; background: none; color: var(--warn); font: inherit; cursor: pointer; flex: 0 0 auto; }
+
+.upload input[type="text"] { margin-top: 6px; font-size: 15px; }
+
+.send { margin-top: 40px; border-top: 1px solid var(--green); padding-top: 20px; }
+
+.send button { background: var(--green); color: rgb(255, 255, 255); border: 0px; border-radius: 4px; font-family: inherit; font-weight: 700; font-size: 17px; line-height: 1; padding: 15px 28px; cursor: pointer; width: 100%; max-width: 320px; }
+
+.send button:disabled { opacity: 0.6; cursor: wait; }
+
+#status { margin: 12px 0px 0px; font-size: 15px; }
+
+#status.err { color: var(--warn); }
+
+.done { display: none; text-align: center; padding: 60px 16px; }
+
+.done h2 { color: var(--green); font-size: 24px; }
+
+body.sent form, body.sent .bar { display: none; }
+
+body.sent .done { display: block; }
+
+.hp { position: absolute; left: -9999px; }
+
+footer { border-top: 1px solid var(--line); font-size: 13px; color: var(--grey); }
+
+footer .in { padding: 14px 16px; }
+
+@media (max-width: 480px) {
+  .opts.row, .opts.grid { grid-template-columns: 1fr; }
+  .note { display: block; margin: 8px 0px 0px; }
+}</style>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Client Discovery Questionnaire | Dharma</title>
+
+</head>
+<body>
+<header><div class="in"><h1>Client Discovery Questionnaire</h1><p>Dharma | The-Me-Dia/Hey Nisse</p></div></header>
+<div class="bar"><div class="in"><div class="track"><i id="prog" style="width: 0%;"></i></div><span id="progtxt">0 of 69 answered</span></div></div>
+<main>
+<form enctype="multipart/form-data" id="f" method="POST" name="client-discovery" novalidate="">
+
+<p class="hp"><label>Leave this empty <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+<div class="intro"><p>Hi Akash and Katy, thanks for the great conversation. We've filled in what we learned on the call, so this is mostly about the details only you two know: the projects you're proudest of, the clients you want more of, and what's slowing things down. Rough answers are fine, and "not sure" is a useful answer too. Fill it in right here, attach any project photos, drawings, logos or testimonials as you go, and press Send at the bottom.</p></div>
+<p class="saved">Your answers save on this device as you go, so you can come back and finish later. Attached files aren't saved, so add them in the same visit you press Send.</p>
+<section class="sec"><h2>1. About Dharma and the team</h2>
+<fieldset class="q"><legend id="l-1-1"><span class="n">1.</span> Full legal business name, the name clients know you by, and your role. <span class="req">Required</span></legend><input type="text" id="q1-01-full-legal-business-name-the-name-client" name="q1-01-full-legal-business-name-the-name-client" aria-labelledby="l-1-1" required=""></fieldset>
+<fieldset class="q"><legend id="l-1-2"><span class="n">2.</span> Best email and phone number, and how you prefer we reach you. <span class="req">Required</span></legend><label class="sub" for="q1-02-best-email-and-phone-number-and-how-you-email-and-phone">Email and phone</label><input type="text" id="q1-02-best-email-and-phone-number-and-how-you-email-and-phone" name="q1-02-best-email-and-phone-number-and-how-you-email-and-phone" aria-labelledby="l-1-2" required=""><p class="sub">Preferred way to reach you</p><div class="opts row" role="radiogroup" aria-labelledby="l-1-2"><label class="opt" for="q1-02-best-email-and-phone-number-and-how-you-preferred-way-to-reach-y--text"><input type="radio" id="q1-02-best-email-and-phone-number-and-how-you-preferred-way-to-reach-y--text" name="q1-02-best-email-and-phone-number-and-how-you-preferred-way-to-reach-y" value="Text" required=""><span>Text</span></label><label class="opt" for="q1-02-best-email-and-phone-number-and-how-you-preferred-way-to-reach-y--call"><input type="radio" id="q1-02-best-email-and-phone-number-and-how-you-preferred-way-to-reach-y--call" name="q1-02-best-email-and-phone-number-and-how-you-preferred-way-to-reach-y" value="Call"><span>Call</span></label><label class="opt" for="q1-02-best-email-and-phone-number-and-how-you-preferred-way-to-reach-y--email"><input type="radio" id="q1-02-best-email-and-phone-number-and-how-you-preferred-way-to-reach-y--email" name="q1-02-best-email-and-phone-number-and-how-you-preferred-way-to-reach-y" value="Email"><span>Email</span></label><label class="opt" for="q1-02-best-email-and-phone-number-and-how-you-preferred-way-to-reach-y--whatsapp"><input type="radio" id="q1-02-best-email-and-phone-number-and-how-you-preferred-way-to-reach-y--whatsapp" name="q1-02-best-email-and-phone-number-and-how-you-preferred-way-to-reach-y" value="WhatsApp"><span>WhatsApp</span></label></div></fieldset>
+<fieldset class="q"><legend id="l-1-3"><span class="n">3.</span> How long has Dharma been building, and how did it start? </legend><textarea id="q1-03-how-long-has-dharma-been-building-and-ho" name="q1-03-how-long-has-dharma-been-building-and-ho" rows="4" aria-labelledby="l-1-3"></textarea></fieldset>
+<fieldset class="q"><legend id="l-1-4"><span class="n">4.</span> Who's on the team today (partners, site supervisors, office help), and who handles what? </legend><textarea id="q1-04-who-s-on-the-team-today-partners-site-su" name="q1-04-who-s-on-the-team-today-partners-site-su" rows="4" aria-labelledby="l-1-4"></textarea></fieldset>
+<fieldset class="q"><legend id="l-1-5"><span class="n">5.</span> Which licences, registrations, warranty enrolments and insurance do you hold (e.g. Tarion builder registration, WSIB, liability coverage)? </legend><textarea id="q1-05-which-licences-registrations-warranty-en" name="q1-05-which-licences-registrations-warranty-en" rows="3" aria-labelledby="l-1-5"></textarea></fieldset>
+<fieldset class="q"><legend id="l-1-6"><span class="n">6.</span> Which areas do you build in? List cities, neighbourhoods or the radius you'll travel. </legend><textarea id="q1-06-which-areas-do-you-build-in-list-cities" name="q1-06-which-areas-do-you-build-in-list-cities" rows="3" aria-labelledby="l-1-6"></textarea></fieldset>
+<fieldset class="q"><legend id="l-1-7"><span class="n">7.</span> How many projects do you typically run in a year, and how many at once? </legend><input type="text" id="q1-07-how-many-projects-do-you-typically-run-i" name="q1-07-how-many-projects-do-you-typically-run-i" aria-labelledby="l-1-7"></fieldset>
+<fieldset class="q"><legend id="l-1-8"><span class="n">8.</span> In one or two sentences, what do you want people to say about Dharma? </legend><textarea id="q1-08-in-one-or-two-sentences-what-do-you-want" name="q1-08-in-one-or-two-sentences-what-do-you-want" rows="3" aria-labelledby="l-1-8"></textarea></fieldset>
+</section>
+<section class="sec"><h2>2. Multiplex clients and projects</h2>
+<fieldset class="q"><legend id="l-2-1"><span class="n">1.</span> We heard your core client is a small investor with 10 to 20 scattered doors who wants to consolidate into one 6 to 15-plex building. Is that right? What would you add or change? </legend><textarea id="q2-01-we-heard-your-core-client-is-a-small-inv" name="q2-01-we-heard-your-core-client-is-a-small-inv" rows="4" aria-labelledby="l-2-1"></textarea></fieldset>
+<fieldset class="q"><legend id="l-2-2"><span class="n">2.</span> Are there other client types you serve or want to serve (first-time builders, landowners, families doing multigenerational builds, non-profits, developers)? </legend><textarea id="q2-02-are-there-other-client-types-you-serve-o" name="q2-02-are-there-other-client-types-you-serve-o" rows="4" aria-labelledby="l-2-2"></textarea></fieldset>
+<fieldset class="q"><legend id="l-2-3"><span class="n">3.</span> How do these investors usually find you, and what's going on for them when they first call? </legend><textarea id="q2-03-how-do-these-investors-usually-find-you" name="q2-03-how-do-these-investors-usually-find-you" rows="4" aria-labelledby="l-2-3"></textarea></fieldset>
+<fieldset class="q"><legend id="l-2-4"><span class="n">4.</span> What do they worry about most before committing (cost, CMHC approval, financing, timelines, finding land, rents)? </legend><textarea id="q2-04-what-do-they-worry-about-most-before-com" name="q2-04-what-do-they-worry-about-most-before-com" rows="4" aria-labelledby="l-2-4"></textarea></fieldset>
+<fieldset class="q"><legend id="l-2-5"><span class="n">5.</span> We heard clients expect about $250 a square foot and the reality is closer to $280. How do you handle that conversation today? </legend><textarea id="q2-05-we-heard-clients-expect-about-250-a-squa" name="q2-05-we-heard-clients-expect-about-250-a-squa" rows="4" aria-labelledby="l-2-5"></textarea></fieldset>
+<fieldset class="q"><legend id="l-2-6"><span class="n">6.</span> Which parts of the process do you handle and which does the client handle (land search, design, permits, CMHC, financing, construction)? </legend><textarea id="q2-06-which-parts-of-the-process-do-you-handle" name="q2-06-which-parts-of-the-process-do-you-handle" rows="4" aria-labelledby="l-2-6"></textarea></fieldset>
+<fieldset class="q"><legend id="l-2-7"><span class="n">7.</span> Which past projects are you proudest of? Give the address or area, unit count, size and what made each one special. </legend><textarea id="q2-07-which-past-projects-are-you-proudest-of" name="q2-07-which-past-projects-are-you-proudest-of" rows="4" aria-labelledby="l-2-7"></textarea></fieldset>
+<fieldset class="q"><legend id="l-2-8"><span class="n">8.</span> Do you have photos, drawings or renderings of those projects that we can use? </legend><div class="opts row" role="radiogroup" aria-labelledby="l-2-8"><label class="opt" for="q2-08-do-you-have-photos-drawings-or-rendering-one--yes"><input type="radio" id="q2-08-do-you-have-photos-drawings-or-rendering-one--yes" name="q2-08-do-you-have-photos-drawings-or-rendering-one" value="Yes"><span>Yes</span></label><label class="opt" for="q2-08-do-you-have-photos-drawings-or-rendering-one--some"><input type="radio" id="q2-08-do-you-have-photos-drawings-or-rendering-one--some" name="q2-08-do-you-have-photos-drawings-or-rendering-one" value="Some"><span>Some</span></label><label class="opt" for="q2-08-do-you-have-photos-drawings-or-rendering-one--no"><input type="radio" id="q2-08-do-you-have-photos-drawings-or-rendering-one--no" name="q2-08-do-you-have-photos-drawings-or-rendering-one" value="No"><span>No</span></label></div><p class="sub">Sending photos, drawings or renderings with this form?</p><div class="upload" data-key="q2-08-do-you-have-photos-drawings-or-rendering-sending-photos-drawings"><label class="pick"><input type="file" multiple="" accept="image/*,application/pdf" aria-labelledby="l-2-8"><span>Add files</span></label><span class="note">Photos or PDFs, up to 4 here. Videos: paste a link below</span><ul class="files"></ul><input type="file" name="q2-08-do-you-have-photos-drawings-or-rendering-sending-photos-drawings-file-1" tabindex="-1"><input type="file" name="q2-08-do-you-have-photos-drawings-or-rendering-sending-photos-drawings-file-2" tabindex="-1"><input type="file" name="q2-08-do-you-have-photos-drawings-or-rendering-sending-photos-drawings-file-3" tabindex="-1"><input type="file" name="q2-08-do-you-have-photos-drawings-or-rendering-sending-photos-drawings-file-4" tabindex="-1"><input type="text" name="q2-08-do-you-have-photos-drawings-or-rendering-sending-photos-drawings-link" aria-label="Link to more files" placeholder="Or paste a Drive or Dropbox link"></div></fieldset>
+<fieldset class="q"><legend id="l-2-9"><span class="n">9.</span> Do you have past clients who'd be willing to share a few words about working with you? </legend><div class="opts row" role="radiogroup" aria-labelledby="l-2-9"><label class="opt" for="q2-09-do-you-have-past-clients-who-d-be-willin--yes"><input type="radio" id="q2-09-do-you-have-past-clients-who-d-be-willin--yes" name="q2-09-do-you-have-past-clients-who-d-be-willin" value="Yes"><span>Yes</span></label><label class="opt" for="q2-09-do-you-have-past-clients-who-d-be-willin--maybe"><input type="radio" id="q2-09-do-you-have-past-clients-who-d-be-willin--maybe" name="q2-09-do-you-have-past-clients-who-d-be-willin" value="Maybe"><span>Maybe</span></label><label class="opt" for="q2-09-do-you-have-past-clients-who-d-be-willin--no"><input type="radio" id="q2-09-do-you-have-past-clients-who-d-be-willin--no" name="q2-09-do-you-have-past-clients-who-d-be-willin" value="No"><span>No</span></label></div></fieldset>
+</section>
+<section class="sec"><h2>3. Commercial fit-ups</h2>
+<fieldset class="q"><legend id="l-3-1"><span class="n">1.</span> What kinds of commercial fit-ups do you want more of? </legend><div class="opts grid" role="group" aria-labelledby="l-3-1"><label class="opt" for="q3-01-what-kinds-of-commercial-fit-ups-do-you--medical-and-health-clini"><input type="checkbox" class="many" id="q3-01-what-kinds-of-commercial-fit-ups-do-you--medical-and-health-clini" data-target="q3-01-what-kinds-of-commercial-fit-ups-do-you" value="Medical and health clinics"><span>Medical and health clinics</span></label><label class="opt" for="q3-01-what-kinds-of-commercial-fit-ups-do-you--offices"><input type="checkbox" class="many" id="q3-01-what-kinds-of-commercial-fit-ups-do-you--offices" data-target="q3-01-what-kinds-of-commercial-fit-ups-do-you" value="Offices"><span>Offices</span></label><label class="opt" for="q3-01-what-kinds-of-commercial-fit-ups-do-you--retail"><input type="checkbox" class="many" id="q3-01-what-kinds-of-commercial-fit-ups-do-you--retail" data-target="q3-01-what-kinds-of-commercial-fit-ups-do-you" value="Retail"><span>Retail</span></label><label class="opt" for="q3-01-what-kinds-of-commercial-fit-ups-do-you--restaurants-and-food-ser"><input type="checkbox" class="many" id="q3-01-what-kinds-of-commercial-fit-ups-do-you--restaurants-and-food-ser" data-target="q3-01-what-kinds-of-commercial-fit-ups-do-you" value="Restaurants and food service"><span>Restaurants and food service</span></label><label class="opt" for="q3-01-what-kinds-of-commercial-fit-ups-do-you--fitness-and-wellness"><input type="checkbox" class="many" id="q3-01-what-kinds-of-commercial-fit-ups-do-you--fitness-and-wellness" data-target="q3-01-what-kinds-of-commercial-fit-ups-do-you" value="Fitness and wellness"><span>Fitness and wellness</span></label><label class="opt" for="q3-01-what-kinds-of-commercial-fit-ups-do-you--industrial-or-warehouse"><input type="checkbox" class="many" id="q3-01-what-kinds-of-commercial-fit-ups-do-you--industrial-or-warehouse" data-target="q3-01-what-kinds-of-commercial-fit-ups-do-you" value="Industrial or warehouse"><span>Industrial or warehouse</span></label><label class="opt" for="q3-01-what-kinds-of-commercial-fit-ups-do-you--other"><input type="checkbox" class="many" id="q3-01-what-kinds-of-commercial-fit-ups-do-you--other" data-target="q3-01-what-kinds-of-commercial-fit-ups-do-you" value="Other"><span>Other</span></label></div><div class="other"><label for="q3-01-what-kinds-of-commercial-fit-ups-do-you-other">Other:</label><input type="text" id="q3-01-what-kinds-of-commercial-fit-ups-do-you-other" name="q3-01-what-kinds-of-commercial-fit-ups-do-you-other"></div></fieldset>
+<fieldset class="q"><legend id="l-3-2"><span class="n">2.</span> What size of space and project is the sweet spot for you? </legend><input type="text" id="q3-02-what-size-of-space-and-project-is-the-sw" name="q3-02-what-size-of-space-and-project-is-the-sw" aria-labelledby="l-3-2"></fieldset>
+<fieldset class="q"><legend id="l-3-3"><span class="n">3.</span> Who is the decision maker you need to reach for fit-ups? </legend><div class="opts grid" role="group" aria-labelledby="l-3-3"><label class="opt" for="q3-03-who-is-the-decision-maker-you-need-to-re--business-owners"><input type="checkbox" class="many" id="q3-03-who-is-the-decision-maker-you-need-to-re--business-owners" data-target="q3-03-who-is-the-decision-maker-you-need-to-re" value="Business owners"><span>Business owners</span></label><label class="opt" for="q3-03-who-is-the-decision-maker-you-need-to-re--landlords"><input type="checkbox" class="many" id="q3-03-who-is-the-decision-maker-you-need-to-re--landlords" data-target="q3-03-who-is-the-decision-maker-you-need-to-re" value="Landlords"><span>Landlords</span></label><label class="opt" for="q3-03-who-is-the-decision-maker-you-need-to-re--property-managers"><input type="checkbox" class="many" id="q3-03-who-is-the-decision-maker-you-need-to-re--property-managers" data-target="q3-03-who-is-the-decision-maker-you-need-to-re" value="Property managers"><span>Property managers</span></label><label class="opt" for="q3-03-who-is-the-decision-maker-you-need-to-re--commercial-real-estate-b"><input type="checkbox" class="many" id="q3-03-who-is-the-decision-maker-you-need-to-re--commercial-real-estate-b" data-target="q3-03-who-is-the-decision-maker-you-need-to-re" value="Commercial real estate brokers"><span>Commercial real estate brokers</span></label><label class="opt" for="q3-03-who-is-the-decision-maker-you-need-to-re--architects-and-designers"><input type="checkbox" class="many" id="q3-03-who-is-the-decision-maker-you-need-to-re--architects-and-designers" data-target="q3-03-who-is-the-decision-maker-you-need-to-re" value="Architects and designers"><span>Architects and designers</span></label><label class="opt" for="q3-03-who-is-the-decision-maker-you-need-to-re--other"><input type="checkbox" class="many" id="q3-03-who-is-the-decision-maker-you-need-to-re--other" data-target="q3-03-who-is-the-decision-maker-you-need-to-re" value="Other"><span>Other</span></label></div><div class="other"><label for="q3-03-who-is-the-decision-maker-you-need-to-re-other">Other:</label><input type="text" id="q3-03-who-is-the-decision-maker-you-need-to-re-other" name="q3-03-who-is-the-decision-maker-you-need-to-re-other"></div></fieldset>
+<fieldset class="q"><legend id="l-3-4"><span class="n">4.</span> What makes Dharma the right pick for a fit-up over a commercial-only contractor? </legend><textarea id="q3-04-what-makes-dharma-the-right-pick-for-a-f" name="q3-04-what-makes-dharma-the-right-pick-for-a-f" rows="4" aria-labelledby="l-3-4"></textarea></fieldset>
+<fieldset class="q"><legend id="l-3-5"><span class="n">5.</span> The hyperbaric clinic is your first project as GC. What can we share about it publicly, and when? </legend><div class="opts row" role="radiogroup" aria-labelledby="l-3-5"><label class="opt" for="q3-05-the-hyperbaric-clinic-is-your-first-proj--name-and-photos-are-fine"><input type="radio" id="q3-05-the-hyperbaric-clinic-is-your-first-proj--name-and-photos-are-fine" name="q3-05-the-hyperbaric-clinic-is-your-first-proj" value="Name and photos are fine"><span>Name and photos are fine</span></label><label class="opt" for="q3-05-the-hyperbaric-clinic-is-your-first-proj--photos-only-no-client-na"><input type="radio" id="q3-05-the-hyperbaric-clinic-is-your-first-proj--photos-only-no-client-na" name="q3-05-the-hyperbaric-clinic-is-your-first-proj" value="Photos only, no client name"><span>Photos only, no client name</span></label><label class="opt" for="q3-05-the-hyperbaric-clinic-is-your-first-proj--nothing-until-it-s-finis"><input type="radio" id="q3-05-the-hyperbaric-clinic-is-your-first-proj--nothing-until-it-s-finis" name="q3-05-the-hyperbaric-clinic-is-your-first-proj" value="Nothing until it's finished"><span>Nothing until it's finished</span></label><label class="opt" for="q3-05-the-hyperbaric-clinic-is-your-first-proj--need-to-check-with-the-c"><input type="radio" id="q3-05-the-hyperbaric-clinic-is-your-first-proj--need-to-check-with-the-c" name="q3-05-the-hyperbaric-clinic-is-your-first-proj" value="Need to check with the client"><span>Need to check with the client</span></label></div></fieldset>
+<fieldset class="q"><legend id="l-3-6"><span class="n">6.</span> Would you like progress content from that project (before, during and after photos or short videos) for the website and social media? </legend><div class="opts row" role="radiogroup" aria-labelledby="l-3-6"><label class="opt" for="q3-06-would-you-like-progress-content-from-tha--yes"><input type="radio" id="q3-06-would-you-like-progress-content-from-tha--yes" name="q3-06-would-you-like-progress-content-from-tha" value="Yes"><span>Yes</span></label><label class="opt" for="q3-06-would-you-like-progress-content-from-tha--maybe"><input type="radio" id="q3-06-would-you-like-progress-content-from-tha--maybe" name="q3-06-would-you-like-progress-content-from-tha" value="Maybe"><span>Maybe</span></label><label class="opt" for="q3-06-would-you-like-progress-content-from-tha--no"><input type="radio" id="q3-06-would-you-like-progress-content-from-tha--no" name="q3-06-would-you-like-progress-content-from-tha" value="No"><span>No</span></label></div></fieldset>
+<fieldset class="q"><legend id="l-3-7"><span class="n">7.</span> Are there any specialized capabilities you want to be known for (medical mechanical systems, accessibility, fast-track schedules, winter work)? </legend><textarea id="q3-07-are-there-any-specialized-capabilities-y" name="q3-07-are-there-any-specialized-capabilities-y" rows="3" aria-labelledby="l-3-7"></textarea></fieldset>
+</section>
+<section class="sec"><h2>4. Goals and what success looks like</h2>
+<fieldset class="q"><legend id="l-4-1"><span class="n">1.</span> If we nailed this, what would be different for Dharma 12 months from now? Be as specific as you can. <span class="req">Required</span></legend><textarea id="q4-01-if-we-nailed-this-what-would-be-differen" name="q4-01-if-we-nailed-this-what-would-be-differen" rows="4" aria-labelledby="l-4-1" required=""></textarea></fieldset>
+<fieldset class="q"><legend id="l-4-2"><span class="n">2.</span> Rank what matters most right now. <span class="hint">(1 = most important)</span></legend><div class="ranks" role="group" aria-labelledby="l-4-2"><label class="rank" for="q4-02-rank-what-matters-most-right-now--more-multiplex-enquiries"><select id="q4-02-rank-what-matters-most-right-now--more-multiplex-enquiries" data-target="q4-02-rank-what-matters-most-right-now" data-opt="More multiplex enquiries"><option value=""></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select><span>More multiplex enquiries</span></label><label class="rank" for="q4-02-rank-what-matters-most-right-now--more-commercial-fit-up-w"><select id="q4-02-rank-what-matters-most-right-now--more-commercial-fit-up-w" data-target="q4-02-rank-what-matters-most-right-now" data-opt="More commercial fit-up work"><option value=""></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select><span>More commercial fit-up work</span></label><label class="rank" for="q4-02-rank-what-matters-most-right-now--better-qualified-leads"><select id="q4-02-rank-what-matters-most-right-now--better-qualified-leads" data-target="q4-02-rank-what-matters-most-right-now" data-opt="Better-qualified leads"><option value=""></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select><span>Better-qualified leads</span></label><label class="rank" for="q4-02-rank-what-matters-most-right-now--being-top-of-mind-as-ott"><select id="q4-02-rank-what-matters-most-right-now--being-top-of-mind-as-ott" data-target="q4-02-rank-what-matters-most-right-now" data-opt="Being top of mind as Ottawa rezoning opens up"><option value=""></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select><span>Being top of mind as Ottawa rezoning opens up</span></label><label class="rank" for="q4-02-rank-what-matters-most-right-now--looking-credible-to-lend"><select id="q4-02-rank-what-matters-most-right-now--looking-credible-to-lend" data-target="q4-02-rank-what-matters-most-right-now" data-opt="Looking credible to lenders, CMHC and partners"><option value=""></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select><span>Looking credible to lenders, CMHC and partners</span></label><label class="rank" for="q4-02-rank-what-matters-most-right-now--recruiting-trades-and-su"><select id="q4-02-rank-what-matters-most-right-now--recruiting-trades-and-su" data-target="q4-02-rank-what-matters-most-right-now" data-opt="Recruiting trades and subcontractors"><option value=""></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select><span>Recruiting trades and subcontractors</span></label></div><p class="warn" data-rank-warn="q4-02-rank-what-matters-most-right-now">Each number can only be used once.</p></fieldset>
+<fieldset class="q"><legend id="l-4-3"><span class="n">3.</span> How many new qualified enquiries a month would feel like a real win, for multiplexes and for fit-ups? </legend><input type="text" id="q4-03-how-many-new-qualified-enquiries-a-month" name="q4-03-how-many-new-qualified-enquiries-a-month" aria-labelledby="l-4-3"></fieldset>
+<fieldset class="q"><legend id="l-4-4"><span class="n">4.</span> Roughly what mix of residential and commercial work would you like in the next year or two? </legend><div class="opts row" role="radiogroup" aria-labelledby="l-4-4"><label class="opt" for="q4-04-roughly-what-mix-of-residential-and-comm--mostly-multiplex"><input type="radio" id="q4-04-roughly-what-mix-of-residential-and-comm--mostly-multiplex" name="q4-04-roughly-what-mix-of-residential-and-comm" value="Mostly multiplex"><span>Mostly multiplex</span></label><label class="opt" for="q4-04-roughly-what-mix-of-residential-and-comm--about-half-and-half"><input type="radio" id="q4-04-roughly-what-mix-of-residential-and-comm--about-half-and-half" name="q4-04-roughly-what-mix-of-residential-and-comm" value="About half and half"><span>About half and half</span></label><label class="opt" for="q4-04-roughly-what-mix-of-residential-and-comm--mostly-commercial"><input type="radio" id="q4-04-roughly-what-mix-of-residential-and-comm--mostly-commercial" name="q4-04-roughly-what-mix-of-residential-and-comm" value="Mostly commercial"><span>Mostly commercial</span></label><label class="opt" for="q4-04-roughly-what-mix-of-residential-and-comm--not-sure-yet"><input type="radio" id="q4-04-roughly-what-mix-of-residential-and-comm--not-sure-yet" name="q4-04-roughly-what-mix-of-residential-and-comm" value="Not sure yet"><span>Not sure yet</span></label></div></fieldset>
+<fieldset class="q"><legend id="l-4-5"><span class="n">5.</span> We heard you want enough volume to have trained subcontractors running jobs so you're not always on site. What does that look like for you, and what's stopping it today? </legend><textarea id="q4-05-we-heard-you-want-enough-volume-to-have" name="q4-05-we-heard-you-want-enough-volume-to-have" rows="4" aria-labelledby="l-4-5"></textarea></fieldset>
+<fieldset class="q"><legend id="l-4-6"><span class="n">6.</span> Any key dates coming up (project completions, rezoning changes, a slow season to fill)? </legend><textarea id="q4-06-any-key-dates-coming-up-project-completi" name="q4-06-any-key-dates-coming-up-project-completi" rows="3" aria-labelledby="l-4-6"></textarea></fieldset>
+<fieldset class="q"><legend id="l-4-7"><span class="n">7.</span> How will you personally judge whether this pilot was worth it? </legend><textarea id="q4-07-how-will-you-personally-judge-whether-th" name="q4-07-how-will-you-personally-judge-whether-th" rows="3" aria-labelledby="l-4-7"></textarea></fieldset>
+</section>
+<section class="sec"><h2>5. Sales process and what's not working</h2>
+<fieldset class="q"><legend id="l-5-1"><span class="n">1.</span> What's the single biggest thing holding the business back right now? <span class="req">Required</span></legend><textarea id="q5-01-what-s-the-single-biggest-thing-holding" name="q5-01-what-s-the-single-biggest-thing-holding" rows="4" aria-labelledby="l-5-1" required=""></textarea></fieldset>
+<fieldset class="q"><legend id="l-5-2"><span class="n">2.</span> Walk us through what happens from a first call to a signed contract. Where do deals stall or fall apart? </legend><textarea id="q5-02-walk-us-through-what-happens-from-a-firs" name="q5-02-walk-us-through-what-happens-from-a-firs" rows="4" aria-labelledby="l-5-2"></textarea></fieldset>
+<fieldset class="q"><legend id="l-5-3"><span class="n">3.</span> With a one to two year sales cycle, how do you stay in touch with prospects while they wait on financing and approvals? </legend><textarea id="q5-03-with-a-one-to-two-year-sales-cycle-how-d" name="q5-03-with-a-one-to-two-year-sales-cycle-how-d" rows="4" aria-labelledby="l-5-3"></textarea></fieldset>
+<fieldset class="q"><legend id="l-5-4"><span class="n">4.</span> When a prospect doesn't go ahead, what's usually the reason? </legend><div class="opts grid" role="group" aria-labelledby="l-5-4"><label class="opt" for="q5-04-when-a-prospect-doesn-t-go-ahead-what-s--cost"><input type="checkbox" class="many" id="q5-04-when-a-prospect-doesn-t-go-ahead-what-s--cost" data-target="q5-04-when-a-prospect-doesn-t-go-ahead-what-s" value="Cost"><span>Cost</span></label><label class="opt" for="q5-04-when-a-prospect-doesn-t-go-ahead-what-s--financing-or-cmhc"><input type="checkbox" class="many" id="q5-04-when-a-prospect-doesn-t-go-ahead-what-s--financing-or-cmhc" data-target="q5-04-when-a-prospect-doesn-t-go-ahead-what-s" value="Financing or CMHC"><span>Financing or CMHC</span></label><label class="opt" for="q5-04-when-a-prospect-doesn-t-go-ahead-what-s--couldn-t-find-land"><input type="checkbox" class="many" id="q5-04-when-a-prospect-doesn-t-go-ahead-what-s--couldn-t-find-land" data-target="q5-04-when-a-prospect-doesn-t-go-ahead-what-s" value="Couldn't find land"><span>Couldn't find land</span></label><label class="opt" for="q5-04-when-a-prospect-doesn-t-go-ahead-what-s--timeline"><input type="checkbox" class="many" id="q5-04-when-a-prospect-doesn-t-go-ahead-what-s--timeline" data-target="q5-04-when-a-prospect-doesn-t-go-ahead-what-s" value="Timeline"><span>Timeline</span></label><label class="opt" for="q5-04-when-a-prospect-doesn-t-go-ahead-what-s--went-with-another-builde"><input type="checkbox" class="many" id="q5-04-when-a-prospect-doesn-t-go-ahead-what-s--went-with-another-builde" data-target="q5-04-when-a-prospect-doesn-t-go-ahead-what-s" value="Went with another builder"><span>Went with another builder</span></label><label class="opt" for="q5-04-when-a-prospect-doesn-t-go-ahead-what-s--went-quiet"><input type="checkbox" class="many" id="q5-04-when-a-prospect-doesn-t-go-ahead-what-s--went-quiet" data-target="q5-04-when-a-prospect-doesn-t-go-ahead-what-s" value="Went quiet"><span>Went quiet</span></label><label class="opt" for="q5-04-when-a-prospect-doesn-t-go-ahead-what-s--other"><input type="checkbox" class="many" id="q5-04-when-a-prospect-doesn-t-go-ahead-what-s--other" data-target="q5-04-when-a-prospect-doesn-t-go-ahead-what-s" value="Other"><span>Other</span></label></div><div class="other"><label for="q5-04-when-a-prospect-doesn-t-go-ahead-what-s-other">Other:</label><input type="text" id="q5-04-when-a-prospect-doesn-t-go-ahead-what-s-other" name="q5-04-when-a-prospect-doesn-t-go-ahead-what-s-other"></div></fieldset>
+<fieldset class="q"><legend id="l-5-5"><span class="n">5.</span> Besides word of mouth, where does work come from today? </legend><div class="opts grid" role="group" aria-labelledby="l-5-5"><label class="opt" for="q5-05-besides-word-of-mouth-where-does-work-co--referrals-from-past-clie"><input type="checkbox" class="many" id="q5-05-besides-word-of-mouth-where-does-work-co--referrals-from-past-clie" data-target="q5-05-besides-word-of-mouth-where-does-work-co" value="Referrals from past clients"><span>Referrals from past clients</span></label><label class="opt" for="q5-05-besides-word-of-mouth-where-does-work-co--realtors"><input type="checkbox" class="many" id="q5-05-besides-word-of-mouth-where-does-work-co--realtors" data-target="q5-05-besides-word-of-mouth-where-does-work-co" value="Realtors"><span>Realtors</span></label><label class="opt" for="q5-05-besides-word-of-mouth-where-does-work-co--mortgage-brokers"><input type="checkbox" class="many" id="q5-05-besides-word-of-mouth-where-does-work-co--mortgage-brokers" data-target="q5-05-besides-word-of-mouth-where-does-work-co" value="Mortgage brokers"><span>Mortgage brokers</span></label><label class="opt" for="q5-05-besides-word-of-mouth-where-does-work-co--architects-and-designers"><input type="checkbox" class="many" id="q5-05-besides-word-of-mouth-where-does-work-co--architects-and-designers" data-target="q5-05-besides-word-of-mouth-where-does-work-co" value="Architects and designers"><span>Architects and designers</span></label><label class="opt" for="q5-05-besides-word-of-mouth-where-does-work-co--lenders"><input type="checkbox" class="many" id="q5-05-besides-word-of-mouth-where-does-work-co--lenders" data-target="q5-05-besides-word-of-mouth-where-does-work-co" value="Lenders"><span>Lenders</span></label><label class="opt" for="q5-05-besides-word-of-mouth-where-does-work-co--instagram"><input type="checkbox" class="many" id="q5-05-besides-word-of-mouth-where-does-work-co--instagram" data-target="q5-05-besides-word-of-mouth-where-does-work-co" value="Instagram"><span>Instagram</span></label><label class="opt" for="q5-05-besides-word-of-mouth-where-does-work-co--google"><input type="checkbox" class="many" id="q5-05-besides-word-of-mouth-where-does-work-co--google" data-target="q5-05-besides-word-of-mouth-where-does-work-co" value="Google"><span>Google</span></label><label class="opt" for="q5-05-besides-word-of-mouth-where-does-work-co--website"><input type="checkbox" class="many" id="q5-05-besides-word-of-mouth-where-does-work-co--website" data-target="q5-05-besides-word-of-mouth-where-does-work-co" value="Website"><span>Website</span></label><label class="opt" for="q5-05-besides-word-of-mouth-where-does-work-co--other"><input type="checkbox" class="many" id="q5-05-besides-word-of-mouth-where-does-work-co--other" data-target="q5-05-besides-word-of-mouth-where-does-work-co" value="Other"><span>Other</span></label></div><div class="other"><label for="q5-05-besides-word-of-mouth-where-does-work-co-other">Other:</label><input type="text" id="q5-05-besides-word-of-mouth-where-does-work-co-other" name="q5-05-besides-word-of-mouth-where-does-work-co-other"></div></fieldset>
+<fieldset class="q"><legend id="l-5-6"><span class="n">6.</span> Which questions do prospects ask you over and over in the first conversation? </legend><textarea id="q5-06-which-questions-do-prospects-ask-you-ove" name="q5-06-which-questions-do-prospects-ask-you-ove" rows="4" aria-labelledby="l-5-6"></textarea></fieldset>
+<fieldset class="q"><legend id="l-5-7"><span class="n">7.</span> What have you tried for marketing before, and how did it go? </legend><textarea id="q5-07-what-have-you-tried-for-marketing-before" name="q5-07-what-have-you-tried-for-marketing-before" rows="4" aria-labelledby="l-5-7"></textarea></fieldset>
+<fieldset class="q"><legend id="l-5-8"><span class="n">8.</span> Which part of marketing do you avoid or never have time for? </legend><textarea id="q5-08-which-part-of-marketing-do-you-avoid-or" name="q5-08-which-part-of-marketing-do-you-avoid-or" rows="3" aria-labelledby="l-5-8"></textarea></fieldset>
+</section>
+<section class="sec"><h2>6. Current online presence</h2>
+<fieldset class="q"><legend id="l-6-1"><span class="n">1.</span> Current website URL, and who built and hosts it. </legend><input type="text" id="q6-01-current-website-url-and-who-built-and-ho" name="q6-01-current-website-url-and-who-built-and-ho" aria-labelledby="l-6-1"></fieldset>
+<fieldset class="q"><legend id="l-6-2"><span class="n">2.</span> Do you own the domain? Who registered it and where? </legend><input type="text" id="q6-02-do-you-own-the-domain-who-registered-it" name="q6-02-do-you-own-the-domain-who-registered-it" aria-labelledby="l-6-2"></fieldset>
+<fieldset class="q"><legend id="l-6-3"><span class="n">3.</span> List your social accounts and handles (Instagram, Facebook, LinkedIn, YouTube, other). </legend><textarea id="q6-03-list-your-social-accounts-and-handles-in" name="q6-03-list-your-social-accounts-and-handles-in" rows="4" aria-labelledby="l-6-3"></textarea></fieldset>
+<fieldset class="q"><legend id="l-6-4"><span class="n">4.</span> Who posts on Instagram today, and what kind of content gets the best response? </legend><textarea id="q6-04-who-posts-on-instagram-today-and-what-ki" name="q6-04-who-posts-on-instagram-today-and-what-ki" rows="3" aria-labelledby="l-6-4"></textarea></fieldset>
+<fieldset class="q"><legend id="l-6-5"><span class="n">5.</span> Do you have a Google Business Profile? How many reviews, and roughly what rating? </legend><input type="text" id="q6-05-do-you-have-a-google-business-profile-ho" name="q6-05-do-you-have-a-google-business-profile-ho" aria-labelledby="l-6-5"></fieldset>
+<fieldset class="q"><legend id="l-6-6"><span class="n">6.</span> Are you listed on any directories or associations (Houzz, HomeStars, the Greater Ottawa Home Builders' Association, BBB)? </legend><textarea id="q6-06-are-you-listed-on-any-directories-or-ass" name="q6-06-are-you-listed-on-any-directories-or-ass" rows="3" aria-labelledby="l-6-6"></textarea></fieldset>
+<fieldset class="q"><legend id="l-6-7"><span class="n">7.</span> Are you comfortable on camera for short site walkthroughs or project updates? </legend><div class="opts row" role="radiogroup" aria-labelledby="l-6-7"><label class="opt" for="q6-07-are-you-comfortable-on-camera-for-short--yes"><input type="radio" id="q6-07-are-you-comfortable-on-camera-for-short--yes" name="q6-07-are-you-comfortable-on-camera-for-short" value="Yes"><span>Yes</span></label><label class="opt" for="q6-07-are-you-comfortable-on-camera-for-short--with-practice"><input type="radio" id="q6-07-are-you-comfortable-on-camera-for-short--with-practice" name="q6-07-are-you-comfortable-on-camera-for-short" value="With practice"><span>With practice</span></label><label class="opt" for="q6-07-are-you-comfortable-on-camera-for-short--prefer-someone-else"><input type="radio" id="q6-07-are-you-comfortable-on-camera-for-short--prefer-someone-else" name="q6-07-are-you-comfortable-on-camera-for-short" value="Prefer someone else"><span>Prefer someone else</span></label><label class="opt" for="q6-07-are-you-comfortable-on-camera-for-short--no"><input type="radio" id="q6-07-are-you-comfortable-on-camera-for-short--no" name="q6-07-are-you-comfortable-on-camera-for-short" value="No"><span>No</span></label></div></fieldset>
+<fieldset class="q"><legend id="l-6-8"><span class="n">8.</span> Is there someone on site who could snap photos and short videos during builds? </legend><div class="opts row" role="radiogroup" aria-labelledby="l-6-8"><label class="opt" for="q6-08-is-there-someone-on-site-who-could-snap--yes"><input type="radio" id="q6-08-is-there-someone-on-site-who-could-snap--yes" name="q6-08-is-there-someone-on-site-who-could-snap" value="Yes"><span>Yes</span></label><label class="opt" for="q6-08-is-there-someone-on-site-who-could-snap--sometimes"><input type="radio" id="q6-08-is-there-someone-on-site-who-could-snap--sometimes" name="q6-08-is-there-someone-on-site-who-could-snap" value="Sometimes"><span>Sometimes</span></label><label class="opt" for="q6-08-is-there-someone-on-site-who-could-snap--no"><input type="radio" id="q6-08-is-there-someone-on-site-who-could-snap--no" name="q6-08-is-there-someone-on-site-who-could-snap" value="No"><span>No</span></label></div></fieldset>
+</section>
+<section class="sec"><h2>7. Brand, proof and competitors</h2>
+<fieldset class="q"><legend id="l-7-1"><span class="n">1.</span> Pick three words that describe how Dharma works. </legend><input type="text" id="q7-01-pick-three-words-that-describe-how-dharm" name="q7-01-pick-three-words-that-describe-how-dharm" aria-labelledby="l-7-1"></fieldset>
+<fieldset class="q"><legend id="l-7-2"><span class="n">2.</span> How should the brand feel? </legend><div class="opts grid" role="group" aria-labelledby="l-7-2"><label class="opt" for="q7-02-how-should-the-brand-feel--trustworthy-and-establis"><input type="checkbox" class="many" id="q7-02-how-should-the-brand-feel--trustworthy-and-establis" data-target="q7-02-how-should-the-brand-feel" value="Trustworthy and established"><span>Trustworthy and established</span></label><label class="opt" for="q7-02-how-should-the-brand-feel--modern-and-efficient"><input type="checkbox" class="many" id="q7-02-how-should-the-brand-feel--modern-and-efficient" data-target="q7-02-how-should-the-brand-feel" value="Modern and efficient"><span>Modern and efficient</span></label><label class="opt" for="q7-02-how-should-the-brand-feel--investor-savvy"><input type="checkbox" class="many" id="q7-02-how-should-the-brand-feel--investor-savvy" data-target="q7-02-how-should-the-brand-feel" value="Investor-savvy"><span>Investor-savvy</span></label><label class="opt" for="q7-02-how-should-the-brand-feel--hands-on-and-personal"><input type="checkbox" class="many" id="q7-02-how-should-the-brand-feel--hands-on-and-personal" data-target="q7-02-how-should-the-brand-feel" value="Hands-on and personal"><span>Hands-on and personal</span></label><label class="opt" for="q7-02-how-should-the-brand-feel--premium"><input type="checkbox" class="many" id="q7-02-how-should-the-brand-feel--premium" data-target="q7-02-how-should-the-brand-feel" value="Premium"><span>Premium</span></label><label class="opt" for="q7-02-how-should-the-brand-feel--straight-talking"><input type="checkbox" class="many" id="q7-02-how-should-the-brand-feel--straight-talking" data-target="q7-02-how-should-the-brand-feel" value="Straight-talking"><span>Straight-talking</span></label><label class="opt" for="q7-02-how-should-the-brand-feel--community-minded"><input type="checkbox" class="many" id="q7-02-how-should-the-brand-feel--community-minded" data-target="q7-02-how-should-the-brand-feel" value="Community-minded"><span>Community-minded</span></label></div></fieldset>
+<fieldset class="q"><legend id="l-7-3"><span class="n">3.</span> Do you have a logo, brand colours or fonts? Upload what you have. </legend><div class="upload" data-key="q7-03-do-you-have-a-logo-brand-colours-or-font"><label class="pick"><input type="file" multiple="" accept="image/*,application/pdf" aria-labelledby="l-7-3"><span>Add files</span></label><span class="note">Photos or PDFs, up to 4 here. Videos: paste a link below</span><ul class="files"></ul><input type="file" name="q7-03-do-you-have-a-logo-brand-colours-or-font-file-1" tabindex="-1"><input type="file" name="q7-03-do-you-have-a-logo-brand-colours-or-font-file-2" tabindex="-1"><input type="file" name="q7-03-do-you-have-a-logo-brand-colours-or-font-file-3" tabindex="-1"><input type="file" name="q7-03-do-you-have-a-logo-brand-colours-or-font-file-4" tabindex="-1"><input type="text" name="q7-03-do-you-have-a-logo-brand-colours-or-font-link" aria-label="Link to more files" placeholder="Or paste a Drive or Dropbox link"></div></fieldset>
+<fieldset class="q"><legend id="l-7-4"><span class="n">4.</span> Name 2 to 3 builders or contractors (local or anywhere) whose online presence you admire, and why. </legend><textarea id="q7-04-name-2-to-3-builders-or-contractors-loca" name="q7-04-name-2-to-3-builders-or-contractors-loca" rows="4" aria-labelledby="l-7-4"></textarea></fieldset>
+<fieldset class="q"><legend id="l-7-5"><span class="n">5.</span> Who are you up against for multiplex and fit-up work in Ottawa? </legend><textarea id="q7-05-who-are-you-up-against-for-multiplex-and" name="q7-05-who-are-you-up-against-for-multiplex-and" rows="3" aria-labelledby="l-7-5"></textarea></fieldset>
+<fieldset class="q"><legend id="l-7-6"><span class="n">6.</span> What proof do you have that we can show (completed buildings, unit counts, on-time or on-budget record, awards, years in business)? </legend><textarea id="q7-06-what-proof-do-you-have-that-we-can-show" name="q7-06-what-proof-do-you-have-that-we-can-show" rows="4" aria-labelledby="l-7-6"></textarea></fieldset>
+<fieldset class="q"><legend id="l-7-7"><span class="n">7.</span> Anything you never want associated with the brand, or never want to promise publicly? </legend><textarea id="q7-07-anything-you-never-want-associated-with" name="q7-07-anything-you-never-want-associated-with" rows="3" aria-labelledby="l-7-7"></textarea></fieldset>
+<fieldset class="q"><legend id="l-7-8"><span class="n">8.</span> Should content be in English, French, or both? </legend><div class="opts row" role="radiogroup" aria-labelledby="l-7-8"><label class="opt" for="q7-08-should-content-be-in-english-french-or-b--english"><input type="radio" id="q7-08-should-content-be-in-english-french-or-b--english" name="q7-08-should-content-be-in-english-french-or-b" value="English"><span>English</span></label><label class="opt" for="q7-08-should-content-be-in-english-french-or-b--french"><input type="radio" id="q7-08-should-content-be-in-english-french-or-b--french" name="q7-08-should-content-be-in-english-french-or-b" value="French"><span>French</span></label><label class="opt" for="q7-08-should-content-be-in-english-french-or-b--both"><input type="radio" id="q7-08-should-content-be-in-english-french-or-b--both" name="q7-08-should-content-be-in-english-french-or-b" value="Both"><span>Both</span></label></div></fieldset>
+<fieldset class="q"><legend id="l-7-9"><span class="n">9.</span> What's the story behind Dharma? Why does this work matter to you? </legend><textarea id="q7-09-what-s-the-story-behind-dharma-why-does" name="q7-09-what-s-the-story-behind-dharma-why-does" rows="4" aria-labelledby="l-7-9"></textarea></fieldset>
+</section>
+<section class="sec"><h2>8. Website needs</h2>
+<fieldset class="q"><legend id="l-8-1"><span class="n">1.</span> What's the number one thing a visitor should do on your website? </legend><div class="opts row" role="radiogroup" aria-labelledby="l-8-1"><label class="opt" for="q8-01-what-s-the-number-one-thing-a-visitor-sh--book-a-consultation"><input type="radio" id="q8-01-what-s-the-number-one-thing-a-visitor-sh--book-a-consultation" name="q8-01-what-s-the-number-one-thing-a-visitor-sh" value="Book a consultation"><span>Book a consultation</span></label><label class="opt" for="q8-01-what-s-the-number-one-thing-a-visitor-sh--request-a-project-estima"><input type="radio" id="q8-01-what-s-the-number-one-thing-a-visitor-sh--request-a-project-estima" name="q8-01-what-s-the-number-one-thing-a-visitor-sh" value="Request a project estimate"><span>Request a project estimate</span></label><label class="opt" for="q8-01-what-s-the-number-one-thing-a-visitor-sh--call-us"><input type="radio" id="q8-01-what-s-the-number-one-thing-a-visitor-sh--call-us" name="q8-01-what-s-the-number-one-thing-a-visitor-sh" value="Call us"><span>Call us</span></label><label class="opt" for="q8-01-what-s-the-number-one-thing-a-visitor-sh--download-a-guide"><input type="radio" id="q8-01-what-s-the-number-one-thing-a-visitor-sh--download-a-guide" name="q8-01-what-s-the-number-one-thing-a-visitor-sh" value="Download a guide"><span>Download a guide</span></label><label class="opt" for="q8-01-what-s-the-number-one-thing-a-visitor-sh--join-an-email-list"><input type="radio" id="q8-01-what-s-the-number-one-thing-a-visitor-sh--join-an-email-list" name="q8-01-what-s-the-number-one-thing-a-visitor-sh" value="Join an email list"><span>Join an email list</span></label></div></fieldset>
+<fieldset class="q"><legend id="l-8-2"><span class="n">2.</span> Which pages or features do you want? </legend><div class="opts grid" role="group" aria-labelledby="l-8-2"><label class="opt" for="q8-02-which-pages-or-features-do-you-want--about"><input type="checkbox" class="many" id="q8-02-which-pages-or-features-do-you-want--about" data-target="q8-02-which-pages-or-features-do-you-want" value="About"><span>About</span></label><label class="opt" for="q8-02-which-pages-or-features-do-you-want--multiplex-builds"><input type="checkbox" class="many" id="q8-02-which-pages-or-features-do-you-want--multiplex-builds" data-target="q8-02-which-pages-or-features-do-you-want" value="Multiplex builds"><span>Multiplex builds</span></label><label class="opt" for="q8-02-which-pages-or-features-do-you-want--commercial-fit-ups"><input type="checkbox" class="many" id="q8-02-which-pages-or-features-do-you-want--commercial-fit-ups" data-target="q8-02-which-pages-or-features-do-you-want" value="Commercial fit-ups"><span>Commercial fit-ups</span></label><label class="opt" for="q8-02-which-pages-or-features-do-you-want--project-portfolio"><input type="checkbox" class="many" id="q8-02-which-pages-or-features-do-you-want--project-portfolio" data-target="q8-02-which-pages-or-features-do-you-want" value="Project portfolio"><span>Project portfolio</span></label><label class="opt" for="q8-02-which-pages-or-features-do-you-want--our-process"><input type="checkbox" class="many" id="q8-02-which-pages-or-features-do-you-want--our-process" data-target="q8-02-which-pages-or-features-do-you-want" value="Our process"><span>Our process</span></label><label class="opt" for="q8-02-which-pages-or-features-do-you-want--cost-and-timeline-guide"><input type="checkbox" class="many" id="q8-02-which-pages-or-features-do-you-want--cost-and-timeline-guide" data-target="q8-02-which-pages-or-features-do-you-want" value="Cost and timeline guide"><span>Cost and timeline guide</span></label><label class="opt" for="q8-02-which-pages-or-features-do-you-want--financing-and-cmhc-basic"><input type="checkbox" class="many" id="q8-02-which-pages-or-features-do-you-want--financing-and-cmhc-basic" data-target="q8-02-which-pages-or-features-do-you-want" value="Financing and CMHC basics"><span>Financing and CMHC basics</span></label><label class="opt" for="q8-02-which-pages-or-features-do-you-want--testimonials"><input type="checkbox" class="many" id="q8-02-which-pages-or-features-do-you-want--testimonials" data-target="q8-02-which-pages-or-features-do-you-want" value="Testimonials"><span>Testimonials</span></label><label class="opt" for="q8-02-which-pages-or-features-do-you-want--faq"><input type="checkbox" class="many" id="q8-02-which-pages-or-features-do-you-want--faq" data-target="q8-02-which-pages-or-features-do-you-want" value="FAQ"><span>FAQ</span></label><label class="opt" for="q8-02-which-pages-or-features-do-you-want--blog"><input type="checkbox" class="many" id="q8-02-which-pages-or-features-do-you-want--blog" data-target="q8-02-which-pages-or-features-do-you-want" value="Blog"><span>Blog</span></label><label class="opt" for="q8-02-which-pages-or-features-do-you-want--careers-and-trades"><input type="checkbox" class="many" id="q8-02-which-pages-or-features-do-you-want--careers-and-trades" data-target="q8-02-which-pages-or-features-do-you-want" value="Careers and trades"><span>Careers and trades</span></label><label class="opt" for="q8-02-which-pages-or-features-do-you-want--contact"><input type="checkbox" class="many" id="q8-02-which-pages-or-features-do-you-want--contact" data-target="q8-02-which-pages-or-features-do-you-want" value="Contact"><span>Contact</span></label></div></fieldset>
+<fieldset class="q"><legend id="l-8-3"><span class="n">3.</span> Should the site speak to investors and commercial clients separately (two clear paths), or as one audience? </legend><div class="opts row" role="radiogroup" aria-labelledby="l-8-3"><label class="opt" for="q8-03-should-the-site-speak-to-investors-and-c--two-separate-paths"><input type="radio" id="q8-03-should-the-site-speak-to-investors-and-c--two-separate-paths" name="q8-03-should-the-site-speak-to-investors-and-c" value="Two separate paths"><span>Two separate paths</span></label><label class="opt" for="q8-03-should-the-site-speak-to-investors-and-c--one-audience"><input type="radio" id="q8-03-should-the-site-speak-to-investors-and-c--one-audience" name="q8-03-should-the-site-speak-to-investors-and-c" value="One audience"><span>One audience</span></label><label class="opt" for="q8-03-should-the-site-speak-to-investors-and-c--not-sure"><input type="radio" id="q8-03-should-the-site-speak-to-investors-and-c--not-sure" name="q8-03-should-the-site-speak-to-investors-and-c" value="Not sure"><span>Not sure</span></label></div></fieldset>
+<fieldset class="q"><legend id="l-8-4"><span class="n">4.</span> Would you show cost ranges per square foot publicly? </legend><div class="opts row" role="radiogroup" aria-labelledby="l-8-4"><label class="opt" for="q8-04-would-you-show-cost-ranges-per-square-fo--yes"><input type="radio" id="q8-04-would-you-show-cost-ranges-per-square-fo--yes" name="q8-04-would-you-show-cost-ranges-per-square-fo" value="Yes"><span>Yes</span></label><label class="opt" for="q8-04-would-you-show-cost-ranges-per-square-fo--ranges-only"><input type="radio" id="q8-04-would-you-show-cost-ranges-per-square-fo--ranges-only" name="q8-04-would-you-show-cost-ranges-per-square-fo" value="Ranges only"><span>Ranges only</span></label><label class="opt" for="q8-04-would-you-show-cost-ranges-per-square-fo--no"><input type="radio" id="q8-04-would-you-show-cost-ranges-per-square-fo--no" name="q8-04-would-you-show-cost-ranges-per-square-fo" value="No"><span>No</span></label></div></fieldset>
+<fieldset class="q"><legend id="l-8-5"><span class="n">5.</span> Would you like a page for recruiting trades and subcontractors? </legend><div class="opts row" role="radiogroup" aria-labelledby="l-8-5"><label class="opt" for="q8-05-would-you-like-a-page-for-recruiting-tra--yes"><input type="radio" id="q8-05-would-you-like-a-page-for-recruiting-tra--yes" name="q8-05-would-you-like-a-page-for-recruiting-tra" value="Yes"><span>Yes</span></label><label class="opt" for="q8-05-would-you-like-a-page-for-recruiting-tra--not-now"><input type="radio" id="q8-05-would-you-like-a-page-for-recruiting-tra--not-now" name="q8-05-would-you-like-a-page-for-recruiting-tra" value="Not now"><span>Not now</span></label></div></fieldset>
+<fieldset class="q"><legend id="l-8-6"><span class="n">6.</span> Share any websites you love the look or feel of, construction or otherwise. </legend><textarea id="q8-06-share-any-websites-you-love-the-look-or" name="q8-06-share-any-websites-you-love-the-look-or" rows="3" aria-labelledby="l-8-6"></textarea></fieldset>
+</section>
+<section class="sec"><h2>9. Access, assets and logistics</h2>
+<fieldset class="q"><legend id="l-9-1"><span class="n">1.</span> Which accounts can you give us access to? We'll set this up safely on the kickoff call, so please don't type passwords into this form. </legend><div class="opts grid" role="group" aria-labelledby="l-9-1"><label class="opt" for="q9-01-which-accounts-can-you-give-us-access-to--domain-registrar"><input type="checkbox" class="many" id="q9-01-which-accounts-can-you-give-us-access-to--domain-registrar" data-target="q9-01-which-accounts-can-you-give-us-access-to" value="Domain registrar"><span>Domain registrar</span></label><label class="opt" for="q9-01-which-accounts-can-you-give-us-access-to--current-website-and-host"><input type="checkbox" class="many" id="q9-01-which-accounts-can-you-give-us-access-to--current-website-and-host" data-target="q9-01-which-accounts-can-you-give-us-access-to" value="Current website and hosting"><span>Current website and hosting</span></label><label class="opt" for="q9-01-which-accounts-can-you-give-us-access-to--instagram"><input type="checkbox" class="many" id="q9-01-which-accounts-can-you-give-us-access-to--instagram" data-target="q9-01-which-accounts-can-you-give-us-access-to" value="Instagram"><span>Instagram</span></label><label class="opt" for="q9-01-which-accounts-can-you-give-us-access-to--facebook"><input type="checkbox" class="many" id="q9-01-which-accounts-can-you-give-us-access-to--facebook" data-target="q9-01-which-accounts-can-you-give-us-access-to" value="Facebook"><span>Facebook</span></label><label class="opt" for="q9-01-which-accounts-can-you-give-us-access-to--linkedin"><input type="checkbox" class="many" id="q9-01-which-accounts-can-you-give-us-access-to--linkedin" data-target="q9-01-which-accounts-can-you-give-us-access-to" value="LinkedIn"><span>LinkedIn</span></label><label class="opt" for="q9-01-which-accounts-can-you-give-us-access-to--google-business-profile"><input type="checkbox" class="many" id="q9-01-which-accounts-can-you-give-us-access-to--google-business-profile" data-target="q9-01-which-accounts-can-you-give-us-access-to" value="Google Business Profile"><span>Google Business Profile</span></label><label class="opt" for="q9-01-which-accounts-can-you-give-us-access-to--email-platform"><input type="checkbox" class="many" id="q9-01-which-accounts-can-you-give-us-access-to--email-platform" data-target="q9-01-which-accounts-can-you-give-us-access-to" value="Email platform"><span>Email platform</span></label></div></fieldset>
+<fieldset class="q"><legend id="l-9-2"><span class="n">2.</span> Upload anything useful: logo, project photos, drawings, renderings, testimonials, brochures. </legend><div class="upload" data-key="q9-02-upload-anything-useful-logo-project-phot"><label class="pick"><input type="file" multiple="" accept="image/*,application/pdf" aria-labelledby="l-9-2"><span>Add files</span></label><span class="note">Photos or PDFs, up to 4 here. Videos: paste a link below</span><ul class="files"></ul><input type="file" name="q9-02-upload-anything-useful-logo-project-phot-file-1" tabindex="-1"><input type="file" name="q9-02-upload-anything-useful-logo-project-phot-file-2" tabindex="-1"><input type="file" name="q9-02-upload-anything-useful-logo-project-phot-file-3" tabindex="-1"><input type="file" name="q9-02-upload-anything-useful-logo-project-phot-file-4" tabindex="-1"><input type="text" name="q9-02-upload-anything-useful-logo-project-phot-link" aria-label="Link to more files" placeholder="Or paste a Drive or Dropbox link"></div></fieldset>
+<fieldset class="q"><legend id="l-9-3"><span class="n">3.</span> Who makes the final call on approvals, and how fast can you usually review drafts? </legend><label class="sub" for="q9-03-who-makes-the-final-call-on-approvals-an-who-makes-the-final-call">Who makes the final call</label><input type="text" id="q9-03-who-makes-the-final-call-on-approvals-an-who-makes-the-final-call" name="q9-03-who-makes-the-final-call-on-approvals-an-who-makes-the-final-call" aria-labelledby="l-9-3"><p class="sub">How fast you can review drafts</p><div class="opts row" role="radiogroup" aria-labelledby="l-9-3"><label class="opt" for="q9-03-who-makes-the-final-call-on-approvals-an-how-fast-you-can-review--same-day"><input type="radio" id="q9-03-who-makes-the-final-call-on-approvals-an-how-fast-you-can-review--same-day" name="q9-03-who-makes-the-final-call-on-approvals-an-how-fast-you-can-review" value="Same day"><span>Same day</span></label><label class="opt" for="q9-03-who-makes-the-final-call-on-approvals-an-how-fast-you-can-review--1-to-2-days"><input type="radio" id="q9-03-who-makes-the-final-call-on-approvals-an-how-fast-you-can-review--1-to-2-days" name="q9-03-who-makes-the-final-call-on-approvals-an-how-fast-you-can-review" value="1 to 2 days"><span>1 to 2 days</span></label><label class="opt" for="q9-03-who-makes-the-final-call-on-approvals-an-how-fast-you-can-review--within-a-week"><input type="radio" id="q9-03-who-makes-the-final-call-on-approvals-an-how-fast-you-can-review--within-a-week" name="q9-03-who-makes-the-final-call-on-approvals-an-how-fast-you-can-review" value="Within a week"><span>Within a week</span></label></div></fieldset>
+<fieldset class="q"><legend id="l-9-4"><span class="n">4.</span> How do you want to communicate with us day to day? </legend><div class="opts row" role="radiogroup" aria-labelledby="l-9-4"><label class="opt" for="q9-04-how-do-you-want-to-communicate-with-us-d--text"><input type="radio" id="q9-04-how-do-you-want-to-communicate-with-us-d--text" name="q9-04-how-do-you-want-to-communicate-with-us-d" value="Text"><span>Text</span></label><label class="opt" for="q9-04-how-do-you-want-to-communicate-with-us-d--whatsapp"><input type="radio" id="q9-04-how-do-you-want-to-communicate-with-us-d--whatsapp" name="q9-04-how-do-you-want-to-communicate-with-us-d" value="WhatsApp"><span>WhatsApp</span></label><label class="opt" for="q9-04-how-do-you-want-to-communicate-with-us-d--email"><input type="radio" id="q9-04-how-do-you-want-to-communicate-with-us-d--email" name="q9-04-how-do-you-want-to-communicate-with-us-d" value="Email"><span>Email</span></label><label class="opt" for="q9-04-how-do-you-want-to-communicate-with-us-d--slack"><input type="radio" id="q9-04-how-do-you-want-to-communicate-with-us-d--slack" name="q9-04-how-do-you-want-to-communicate-with-us-d" value="Slack"><span>Slack</span></label></div></fieldset>
+<fieldset class="q"><legend id="l-9-5"><span class="n">5.</span> What times work best for a 45 to 60 minute kickoff call? </legend><textarea id="q9-05-what-times-work-best-for-a-45-to-60-minu" name="q9-05-what-times-work-best-for-a-45-to-60-minu" rows="3" aria-labelledby="l-9-5"></textarea></fieldset>
+<fieldset class="q"><legend id="l-9-6"><span class="n">6.</span> Do we have your permission to feature Dharma as a case study and share your launch publicly, once you've approved the specific posts? </legend><div class="opts row" role="radiogroup" aria-labelledby="l-9-6"><label class="opt" for="q9-06-do-we-have-your-permission-to-feature-dh--yes"><input type="radio" id="q9-06-do-we-have-your-permission-to-feature-dh--yes" name="q9-06-do-we-have-your-permission-to-feature-dh" value="Yes"><span>Yes</span></label><label class="opt" for="q9-06-do-we-have-your-permission-to-feature-dh--let-s-discuss"><input type="radio" id="q9-06-do-we-have-your-permission-to-feature-dh--let-s-discuss" name="q9-06-do-we-have-your-permission-to-feature-dh" value="Let's discuss"><span>Let's discuss</span></label></div></fieldset>
+<fieldset class="q"><legend id="l-9-7"><span class="n">7.</span> Anything else we should know, or anything you're worried about? </legend><textarea id="q9-07-anything-else-we-should-know-or-anything" name="q9-07-anything-else-we-should-know-or-anything" rows="4" aria-labelledby="l-9-7"></textarea></fieldset>
+</section>
+<div class="send">
+<p><strong>Thank you, Akash and Katy. We'll review everything before our kickoff call.</strong></p>
+<button type="submit" id="go">Send my answers</button>
+<p id="status" role="status"></p>
+</div>
+</form>
+<div class="done" id="done"><h2>Got it, thank you!</h2><p>Thank you, Akash and Katy. We'll review everything before our kickoff call.</p></div>
+</main>
+<footer><div class="in">The-Me-Dia/Hey Nisse</div></footer>
+<script>
+(function(){
+var form=document.getElementById('f'), go=document.getElementById('go'), st=document.getElementById('status');
+var STORE='draft-client-discovery', PER=4, MAX=7864320;
+var uploads={};
+
+function each(sel,fn,root){Array.prototype.forEach.call((root||document).querySelectorAll(sel),fn);}
+
+function compose(){
+  each('input[data-many]',function(h){
+    var v=[];each('input.many[data-target="'+h.name+'"]:checked',function(c){v.push(c.value);});
+    h.value=v.join(', ');
+  });
+  each('input[data-rank]',function(h){
+    var s=[];each('select[data-target="'+h.name+'"]',function(x){if(x.value)s.push(x);});
+    s.sort(function(a,b){return a.value-b.value;});
+    h.value=s.map(function(x){return x.value+'. '+x.dataset.opt;}).join('; ');
+    var seen={},dup=false;s.forEach(function(x){if(seen[x.value])dup=true;seen[x.value]=1;});
+    var w=document.querySelector('[data-rank-warn="'+h.name+'"]');if(w)w.hidden=!dup;
+  });
+}
+
+function progress(){
+  var qs=form.querySelectorAll('fieldset.q'),n=0;
+  Array.prototype.forEach.call(qs,function(q){
+    var a=false;
+    each('input[type=text],textarea',function(i){if(i.value.trim())a=true;},q);
+    each('input[type=radio]:checked,input[type=checkbox]:checked',function(){a=true;},q);
+    each('select',function(s){if(s.value)a=true;},q);
+    each('.upload',function(u){if((uploads[u.dataset.key]||[]).length)a=true;},q);
+    if(a)n++;
+  });
+  document.getElementById('prog').style.width=(100*n/qs.length)+'%';
+  document.getElementById('progtxt').textContent=n+' of '+qs.length+' answered';
+}
+
+function save(){
+  var d={};
+  each('input[id],textarea[id],select[id]',function(e){
+    if(e.type==='file')return;
+    d[e.id]=(e.type==='checkbox'||e.type==='radio')?e.checked:e.value;
+  },form);
+  try{localStorage.setItem(STORE,JSON.stringify(d));}catch(_){}
+}
+function restore(){
+  var d=null;try{d=JSON.parse(localStorage.getItem(STORE)||'null');}catch(_){}
+  if(!d)return;
+  Object.keys(d).forEach(function(id){
+    var e=document.getElementById(id);if(!e)return;
+    if(e.type==='checkbox'||e.type==='radio')e.checked=!!d[id];else e.value=d[id];
+  });
+}
+
+function kb(n){return n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB';}
+function renderFiles(box){
+  var key=box.dataset.key,ul=box.querySelector('.files'),list=uploads[key]||[];
+  ul.innerHTML='';
+  list.forEach(function(f,i){
+    var li=document.createElement('li');
+    var s=document.createElement('span');s.textContent=f.name+' ('+kb(f.size)+')';
+    var b=document.createElement('button');b.type='button';b.textContent='Remove';
+    b.setAttribute('aria-label','Remove '+f.name);
+    b.onclick=function(){list.splice(i,1);renderFiles(box);progress();};
+    li.appendChild(s);li.appendChild(b);ul.appendChild(li);
+  });
+}
+each('.upload',function(box){
+  var pick=box.querySelector('.pick input');
+  pick.addEventListener('change',function(){
+    var key=box.dataset.key,list=uploads[key]=uploads[key]||[],skipped=0;
+    Array.prototype.forEach.call(pick.files,function(f){if(list.length<PER)list.push(f);else skipped++;});
+    pick.value='';renderFiles(box);progress();
+    if(skipped){st.className='err';st.textContent='Up to '+PER+' files per question. For more, paste a Drive or Dropbox link.';}
+  });
+});
+
+function shrink(file){
+  var big=file.size>1200000,img=/^image\/(jpeg|png|webp|heic|heif)$/.test(file.type);
+  if(!big||!img||!window.createImageBitmap)return Promise.resolve(file);
+  return createImageBitmap(file).then(function(bmp){
+    var s=Math.min(1,2000/Math.max(bmp.width,bmp.height));
+    var c=document.createElement('canvas');c.width=Math.round(bmp.width*s);c.height=Math.round(bmp.height*s);
+    var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(bmp,0,0,c.width,c.height);
+    return new Promise(function(res){c.toBlob(function(b){
+      res(b&&b.size<file.size?new File([b],file.name.replace(/\.[^.]+$/,'')+'.jpg',{type:'image/jpeg'}):file);
+    },'image/jpeg',0.82);});
+  }).catch(function(){return file;});
+}
+
+form.addEventListener('input',function(e){compose();progress();save();});
+form.addEventListener('change',function(e){compose();progress();save();});
+
+form.addEventListener('submit',function(e){
+  e.preventDefault();
+  compose();
+  if(!form.reportValidity()){st.className='err';st.textContent='Please answer the questions marked Required.';return;}
+  if(document.querySelector('[data-rank-warn]:not([hidden])')){st.className='err';st.textContent='In the ranking question, use each number only once.';return;}
+  go.disabled=true;st.className='';st.textContent='Preparing your files...';
+  var fd=new FormData(form);
+  Array.from(fd.keys()).forEach(function(k){if(/-file-\d+$/.test(k))fd.delete(k);});
+  var jobs=[];
+  Object.keys(uploads).forEach(function(key){
+    uploads[key].forEach(function(f,i){jobs.push(shrink(f).then(function(s){return [key+'-file-'+(i+1),s];}));});
+  });
+  Promise.all(jobs).then(function(done){
+    var total=0;done.forEach(function(p){total+=p[1].size;fd.append(p[0],p[1],p[1].name);});
+    if(total>MAX){throw new Error('size');}
+    st.textContent='Sending...';
+    return fetch('/',{method:'POST',body:fd});
+  }).then(function(r){
+    if(!r.ok)throw new Error('http');
+    try{localStorage.removeItem(STORE);}catch(_){}
+    document.body.classList.add('sent');window.scrollTo(0,0);
+  }).catch(function(err){
+    go.disabled=false;st.className='err';
+    st.textContent=err.message==='size'
+      ?'Your attachments are too large to send together (limit about 7 MB). Remove a few and paste a Google Drive or Dropbox link instead.'
+      :'Something went wrong sending the form. Your answers are still saved here, so please try again in a minute.';
+  });
+});
+
+restore();compose();progress();
+})();
+</script>
+
+
+</body></html>
