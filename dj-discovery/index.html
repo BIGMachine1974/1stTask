@@ -139,12 +139,36 @@ footer .in { padding: 14px 16px; }
   .opts.row, .opts.grid { grid-template-columns: 1fr; }
   .note { display: block; margin: 8px 0px 0px; }
 }
+/* The-Me-Dia brand */
+@font-face { font-family: "Mansfield"; src: url("https://the-me-dia.com/fonts/mansfield-bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+:root { --green: #1a211d; --gold: #c6a679; --ink: #1a211d; --grey: #5a5e56; --fill: #f6f2e9; --line: #d9d0bf; --bg: #fbf9f2; --warn: #a4452c; }
+header { background: var(--ink); color: #fbf9f2; padding: 28px 16px 34px; border-bottom: 3px solid var(--gold); }
+header .brandrow { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+header .avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); flex: 0 0 auto; }
+header .mark { font-family: "Mansfield", "Helvetica Neue", Arial, sans-serif; font-weight: 700; font-size: 24px; letter-spacing: -0.01em; line-height: 1; color: #fbf9f2; }
+header .mark b { color: var(--gold); }
+header .tag { display: block; margin-top: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); }
+header h1 { font-family: "Mansfield", "Helvetica Neue", Arial, sans-serif; color: #fbf9f2; }
+header p.for { margin: 8px 0 0; color: #e8e1d5; font-size: 15px; }
+.track i, .pick span, .send button { background: var(--ink); }
+.track i { background: var(--gold); }
+.sec h2 { border-bottom-color: var(--gold); }
+legend .n { color: #8a6d3f; }
+.req { color: #8a6d3f; border-color: #8a6d3f; }
+.intro { border-left-color: var(--gold) !important; }
+.opt:has(input:checked) { border-color: var(--gold); background: var(--fill); }
+.opt input, .scale input { accent-color: var(--ink); }
+.done h2 { color: var(--ink); }
+footer { background: var(--ink); color: #e8e1d5; border-top: 3px solid var(--gold); }
+footer .in { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+footer .gold { color: var(--gold); }
+
 .upload > input[type="file"] { display: none; }
 [hidden] { display: none !important; }
 </style>
 </head>
 <body>
-<header><div class="in"><h1>Client Discovery Questionnaire</h1><p>Goodvibe Mobile Entertainment | The-Me-Dia/Hey Nisse</p></div></header>
+<header><div class="in"><div class="brandrow"><div><span class="mark">The-Me-Dia<b>.</b></span><span class="tag">Identity to Influence</span></div></div><h1>Client Discovery Questionnaire</h1><p class="for">Prepared for Goodvibe Mobile Entertainment</p></div></header>
 <div class="bar"><div class="in"><div class="track"><i id="prog"></i></div><span id="progtxt">0 of 75 answered</span></div></div>
 <main>
 <form name="client-discovery" id="f" method="POST" enctype="multipart/form-data" data-netlify="true" netlify-honeypot="bot-field" novalidate>
@@ -253,7 +277,7 @@ footer .in { padding: 14px 16px; }
 </form>
 <div class="done" id="done"><h2>Got it, thank you!</h2><p>Thank you, Ryan. We&#x27;ll review everything before our kickoff call.</p></div>
 </main>
-<footer><div class="in">The-Me-Dia/Hey Nisse</div></footer>
+<footer><div class="in"><span>&copy; 2026 The-Me-Dia &middot; Ottawa / Gatineau</span><span class="gold">Identity to Influence</span></div></footer>
 <script>
 (function(){
 var form=document.getElementById('f'), go=document.getElementById('go'), st=document.getElementById('status');
