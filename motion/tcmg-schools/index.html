@@ -1,0 +1,177 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+/* Inter is a stand-in. Swap in the TCMG brand fonts here. */
+@font-face{font-family:"ID";font-weight:800;src:local("InterDisplay-ExtraBold"),url("file:///usr/share/fonts/opentype/inter/InterDisplay-ExtraBold.otf")}
+@font-face{font-family:"ID";font-weight:700;src:local("InterDisplay-Bold"),url("file:///usr/share/fonts/opentype/inter/InterDisplay-Bold.otf")}
+@font-face{font-family:"IN";font-weight:500;src:local("Inter-Medium"),url("file:///usr/share/fonts/opentype/inter/Inter-Medium.otf")}
+@font-face{font-family:"IN";font-weight:600;src:local("Inter-SemiBold"),url("file:///usr/share/fonts/opentype/inter/Inter-SemiBold.otf")}
+@font-face{font-family:"IN";font-weight:700;src:local("Inter-Bold"),url("file:///usr/share/fonts/opentype/inter/Inter-Bold.otf")}
+html,body{margin:0;background:#101A2B}
+canvas{display:block}
+</style></head>
+<body><canvas id="c" width="1080" height="1920"></canvas>
+<script>
+// TCMG schools explainer, "The catchment trap". Motion v2 approach: seek(t) draws frame t.
+const W=1080,H=1920,DUR=38.5;
+// PLACEHOLDER palette: replace with the TCMG brand kit.
+const C={bg:'#101A2B',card:'#1B2740',acc:'#5BB3D9',tan:'#C9D6E3',off:'#F6F4EF',mute:'#8592A6',red:'#D0574A'};
+const cv=document.getElementById('c'),x=cv.getContext('2d');
+
+// ---------- motion helpers ----------
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const lerp=(a,b,p)=>a+(b-a)*p;
+const smooth=p=>{p=clamp(p);return p*p*(3-2*p)};
+// closed-form damped spring, 0 -> 1, pure function of elapsed time
+function spring(dt,{w,z}){ if(dt<=0)return 0;
+  if(z<1){const wd=w*Math.sqrt(1-z*z);return 1-Math.exp(-z*w*dt)*(Math.cos(wd*dt)+z*w/wd*Math.sin(wd*dt));}
+  return 1-Math.exp(-w*dt)*(1+w*dt);}
+const SNAP={w:26,z:.85}, PANEL={w:15,z:.72}, LAND={w:17,z:.48}, GLIDE={w:7,z:1};
+const fadeWin=(t,a,b,f=.25)=>clamp(Math.min((t-a)/f,(b-t)/f));
+
+// ---------- drawing helpers ----------
+function rr(X,Y,w,h,r){x.beginPath();x.roundRect(X,Y,w,h,r);}
+function text(s,X,Y,{size=40,weight=500,fam='IN',color=C.off,align='center',ls=0,alpha=1}={}){
+  x.save();x.globalAlpha*=alpha;x.font=`${weight} ${size}px ${fam}`;x.fillStyle=color;x.textAlign=align;x.textBaseline='alphabetic';
+  x.letterSpacing=ls+'px';x.fillText(s,X,Y);x.restore();}
+function runs(parts,X,Y,o){x.save();x.font=`${o.weight} ${o.size}px ${o.fam}`;x.letterSpacing=(o.ls||0)+'px';
+  const tw=parts.reduce((a,[s])=>a+x.measureText(s).width,0);let cx=X-tw/2;
+  for(const[s,c]of parts){x.globalAlpha=o.alpha??1;x.fillStyle=c;x.textAlign='left';x.fillText(s,cx,Y);cx+=x.measureText(s).width;}x.restore();}
+function withT(tx,ty,sc,fn,alpha=1,rot=0){if(alpha<=0.001)return;x.save();x.globalAlpha*=alpha;x.translate(tx,ty);x.rotate(rot);x.scale(sc,sc);fn();x.restore();}
+
+// ---------- captions (read-along pace; retime to Greg's VO) ----------
+const CAPS=[[0.35,2.75,"Being in the catchment doesn't mean|your kid gets a seat.",1],
+[2.95,5.55,'Ottawa has four school boards,'],
+[5.65,8.65,'and every address maps to|a different school on each one.'],
+[8.95,11.35,'In the south end, the map|is only half the story.'],
+[11.55,14.65,'Vimy Ridge Public School in Findlay Creek|was built for 674 students.'],
+[14.85,17.95,'By 2022, it had 17 portables in the yard.'],
+[18.25,21.35,'Riverside South went without a public|high school until September 2025.'],
+[21.65,24.45,'So before you fall for a kitchen,'],
+[24.65,31.45,'call the board and ask two questions.'],
+[31.75,34.55,'Pick the school. Then the house.',1],
+[34.75,DUR+1,'More at yourhomeinottawa.ca']];
+function captions(t){for(const[a,b,s,g]of CAPS){const al=fadeWin(t,a,b,.12);if(al<=0)continue;
+  const lines=s.split('|');const h=lines.length>1?150:96;const y=1580-h/2+(1-spring(t-a,SNAP))*14;
+  x.save();x.globalAlpha=al*.92;x.fillStyle='#1E2A3F';rr(60,y,960,h,18);x.fill();x.restore();
+  lines.forEach((l,i)=>text(l,540,y+(lines.length>1?62+i*50:61),{size:38,weight:g?700:500,color:g?C.acc:C.off,alpha:al}));}}
+
+// ---------- scene pieces ----------
+// the school: one building object reused (Vimy Ridge, then Riverside South)
+function school(cx,base,w,h,{rise=1,dashed=false,flag=true,alpha=1}={}){
+  const hh=h*clamp(rise,0,1.12);x.save();x.globalAlpha*=alpha;
+  if(dashed){x.strokeStyle=C.mute;x.lineWidth=4;x.setLineDash([16,12]);rr(cx-w/2,base-h,w,h,10);x.stroke();
+    text('?',cx,base-h/2+40,{size:120,weight:800,fam:'ID',color:C.mute});x.restore();return;}
+  x.fillStyle=C.card;x.strokeStyle=C.acc;x.lineWidth=4;rr(cx-w/2,base-hh,w,hh,10);x.fill();x.stroke();
+  if(rise>.75){const a=clamp((rise-.75)/.25);x.globalAlpha*=a;
+    x.fillStyle=C.acc;x.fillRect(cx-w/2,base-hh,w,18);
+    x.fillStyle=C.tan;x.globalAlpha*=.4;for(let r=0;r<2;r++)for(let k=0;k<6;k++)if(!(r===1&&(k===2||k===3)))x.fillRect(cx-w/2+34+k*((w-68)/6)+6,base-hh+52+r*(hh-110)/1.6,(w-68)/6-24,40);
+    x.globalAlpha=alpha*a;x.fillStyle=C.acc;rr(cx-34,base-90,68,90,6);x.fill();
+    if(flag){x.strokeStyle=C.tan;x.lineWidth=5;x.beginPath();x.moveTo(cx+w/2-50,base-hh);x.lineTo(cx+w/2-50,base-hh-90);x.stroke();
+      const wv=Math.sin(x._t*3)*6;x.fillStyle=C.red;x.beginPath();x.moveTo(cx+w/2-50,base-hh-90);x.lineTo(cx+w/2+10,base-hh-78+wv*.3);x.lineTo(cx+w/2-50,base-hh-62);x.fill();}}
+  x.restore();}
+function portable(){x.fillStyle=C.tan;rr(-40,-22,80,44,6);x.fill();x.fillStyle=C.bg;x.fillRect(-28,-10,18,14);x.fillRect(10,-10,18,14);}
+function boardTile(X,Y,l1,l2,col){x.fillStyle=C.card;x.strokeStyle=col;x.lineWidth=4;rr(X-200,Y-90,400,180,24);x.fill();x.stroke();
+  text(l1,X,Y-10,{size:40,weight:800,fam:'ID',color:C.off});text(l2,X,Y+42,{size:30,weight:600,color:col,ls:4});}
+function house(){x.fillStyle=C.off;x.beginPath();x.moveTo(-60,-10);x.lineTo(0,-64);x.lineTo(60,-10);x.fill();
+  rr(-46,-14,92,70,6);x.fill();x.fillStyle=C.bg;x.fillRect(-14,18,28,38);}
+
+function bgGlow(t){x.fillStyle=C.bg;x.fillRect(0,0,W,H);
+  const g=x.createRadialGradient(540,860,40,540,860,900);const b=.10+.03*Math.sin(t*0.9);
+  g.addColorStop(0,`rgba(91,179,217,${b})`);g.addColorStop(1,'rgba(91,179,217,0)');x.fillStyle=g;x.fillRect(0,0,W,H);}
+
+// ---------- the frame function ----------
+function seek(t){ x._t=t; bgGlow(t);
+  // A: hook (0 - 2.8)
+  if(t<3.0){const a=1-smooth((t-2.6)/.3);const l1=spring(t-0.15,LAND),l2=spring(t-0.55,LAND),l3=spring(t-1.25,LAND);
+    withT(540,640,lerp(1.3,1,clamp(l1,0,1.2)),()=>text('IN THE CATCHMENT',0,0,{size:84,weight:800,fam:'ID',color:C.off}),a*clamp(l1*2));
+    withT(540,780,lerp(1.3,1,clamp(l2,0,1.2)),()=>text("DOESN'T MEAN",0,0,{size:84,weight:800,fam:'ID',color:C.mute}),a*clamp(l2*2));
+    withT(540,980,lerp(1.6,1,clamp(l3,0,1.3)),()=>{text('A SEAT.',0,0,{size:190,weight:800,fam:'ID',color:C.acc});
+      const u=smooth((t-1.6)/.4);x.fillStyle=C.acc;x.fillRect(-300,34,600*u,10);},a*clamp(l3*2));}
+  // B: four boards, one address (2.9 - 8.8)
+  if(t>2.85&&t<9.0){const a=fadeWin(t,2.85,8.85,.3);
+    const T=[[300,520,'ENGLISH','PUBLIC',C.acc],[780,520,'ENGLISH','CATHOLIC',C.tan],[300,760,'FRENCH','PUBLIC',C.acc],[780,760,'FRENCH','CATHOLIC',C.tan]];
+    text('OTTAWA SCHOOL BOARDS',540,330,{size:30,weight:600,color:C.acc,ls:6,alpha:a*clamp((t-2.9)/.3)});
+    T.forEach(([X,Y,l1,l2,col],i)=>{const s=spring(t-(3.05+i*.22),LAND);withT(X,Y+(1-clamp(s))*40,lerp(.7,1,clamp(s,0,1.15)),()=>boardTile(0,0,l1,l2,col),a*clamp(s*1.5));});
+    // address drops in, then a line to each board's school
+    const hp=spring(t-5.75,LAND);const HX=540,HY=1150;
+    if(t>5.7){withT(HX,HY-(1-clamp(hp))*200,lerp(.6,1,clamp(hp,0,1.2)),house,a*clamp(hp*2));
+      text('ONE ADDRESS',HX,HY+110,{size:28,weight:600,color:C.off,ls:5,alpha:a*clamp((t-6.0)/.3)});
+      T.forEach(([X,Y],i)=>{const p=smooth((t-(6.4+i*.25))/.45);if(p<=0)return;const ex=lerp(HX,X,p),ey=lerp(HY-70,Y+90,p);
+        x.save();x.globalAlpha=a;x.strokeStyle=C.acc;x.lineWidth=4;x.setLineDash([12,10]);x.beginPath();x.moveTo(HX,HY-70);x.lineTo(ex,ey);x.stroke();x.restore();
+        if(p>=1){const d=spring(t-(6.85+i*.25),SNAP);withT(X,Y+90,clamp(d,0,1.2),()=>{x.fillStyle=C.off;x.beginPath();x.arc(0,0,14,0,7);x.fill();},a);}});
+      runs([['4 boards = ',C.off],['4 different schools',C.acc]],540,1360,{size:44,weight:700,fam:'IN',alpha:a*clamp((t-7.6)/.3)});}}
+  // C: half the story (9 - 11.4)
+  if(t>8.9&&t<11.6){const a=fadeWin(t,8.9,11.45,.25);const l=spring(t-9.0,LAND);
+    withT(540,820,lerp(1.15,1,clamp(l)),()=>{runs([['The map is only',C.off]],0,0,{size:88,weight:800,fam:'ID'});runs([['half',C.acc],[' the story.',C.off]],0,108,{size:88,weight:800,fam:'ID'});
+      x.font='800 88px ID';const tot=x.measureText('half the story.').width,hw=x.measureText('half').width;const u=smooth((t-9.7)/.4);
+      x.fillStyle=C.acc;x.fillRect(-tot/2,130,hw*u,9);},a*clamp(l*1.6));}
+  // D: Vimy Ridge fills, then overflows into portables (11.5 - 18.1)
+  if(t>11.45&&t<18.3){const a=fadeWin(t,11.45,18.15,.3);const rise=spring(t-11.55,PANEL);
+    text('VIMY RIDGE PUBLIC SCHOOL',540,300,{size:42,weight:800,fam:'ID',color:C.off,alpha:a*clamp((t-11.6)/.3)});
+    text('FINDLAY CREEK',540,350,{size:28,weight:600,color:C.acc,ls:6,alpha:a*clamp((t-11.7)/.3)});
+    school(540,880,560,300,{rise,alpha:a});
+    // counter and capacity bar
+    const cnt=Math.round(674*smooth((t-12.0)/1.9));const cl=spring(t-12.0,SNAP);
+    withT(540,520,lerp(.8,1,clamp(cl)),()=>{text(cnt.toLocaleString('en-CA'),0,0,{size:120,weight:800,fam:'ID',color:C.off});
+      text('STUDENT PLACES BUILT',0,48,{size:26,weight:600,color:C.tan,ls:5});},a*clamp(cl*1.5)*(1-smooth((t-14.7)/.3)));
+    const BX0=150,BX1=930,BY=1150,CAP=.68;const over=smooth((t-14.9)/1.4);
+    const f=CAP*smooth((t-12.0)/1.9)+(.98-CAP)*over;
+    x.save();x.globalAlpha=a*clamp((t-11.9)/.3);x.fillStyle='#24324D';rr(BX0,BY,BX1-BX0,36,18);x.fill();
+    x.save();rr(BX0,BY,BX1-BX0,36,18);x.clip();x.fillStyle=C.acc;x.fillRect(BX0,BY,(BX1-BX0)*Math.min(f,CAP),36);
+    if(f>CAP){x.fillStyle=C.red;x.fillRect(BX0+(BX1-BX0)*CAP,BY,(BX1-BX0)*(f-CAP),36);}x.restore();
+    const cx=BX0+(BX1-BX0)*CAP;x.strokeStyle=C.off;x.lineWidth=4;x.beginPath();x.moveTo(cx,BY-22);x.lineTo(cx,BY+58);x.stroke();
+    text('CAPACITY 674',cx,BY-36,{size:24,weight:700,color:C.off,ls:3});
+    if(t>15.0){const s=spring(t-15.1,SNAP);text('OVER CAPACITY',lerp(cx,BX1,.5)+20,BY+92,{size:26,weight:700,color:C.red,ls:4,alpha:clamp(s)});}
+    x.restore();
+    // 17 portables spring in around the school
+    for(let i=0;i<17;i++){const r=i<9?0:1,k=r?i-9:i;const px=r?172+k*105:118+k*105,py=r?1015:950;
+      const s=spring(t-(15.0+i*.11),LAND);if(s<=0)continue;withT(px,py-(1-clamp(s))*60,clamp(s,0,1.2),portable,a);}
+    if(t>17.0){const s=spring(t-17.0,LAND);withT(540,620,lerp(1.5,1,clamp(s,0,1.2)),()=>{x.fillStyle=C.red;rr(-260,-62,520,110,16);x.fill();
+      text('17 PORTABLES',0,18,{size:58,weight:800,fam:'ID',color:C.off});},a*clamp(s*2),-.04);}
+    text('Capacity: OCDSB  ·  Portables: Ottawa Citizen, 2022',540,1300,{size:28,weight:500,color:C.mute,alpha:a*clamp((t-12.4)/.4)});}
+  // E: Riverside South, the outline becomes a school (18.2 - 21.5)
+  if(t>18.15&&t<21.6){const a=fadeWin(t,18.15,21.45,.25);
+    text('RIVERSIDE SOUTH',540,340,{size:52,weight:800,fam:'ID',color:C.off,alpha:a*clamp((t-18.25)/.3)});
+    const built=t>19.75;const rise=spring(t-19.8,LAND);
+    if(!built)school(540,1000,600,380,{dashed:true,alpha:a*clamp((t-18.3)/.3)});else school(540,1000,600,380,{rise,flag:true,alpha:a});
+    if(!built)text('NO PUBLIC HIGH SCHOOL',540,1110,{size:32,weight:700,color:C.mute,ls:4,alpha:a*clamp((t-18.5)/.3)});
+    else{text('RIVERSIDE SOUTH SECONDARY',540,1110,{size:32,weight:700,color:C.acc,ls:4,alpha:a*clamp((t-20.0)/.3)});
+      const st=spring(t-20.35,LAND);if(t>20.35)withT(510,500,lerp(1.7,1,clamp(st,0,1.2)),()=>{x.strokeStyle=C.acc;x.lineWidth=6;rr(-240,-50,480,100,14);x.stroke();
+        text('OPENED SEPT 2025',0,16,{size:44,weight:800,fam:'ID',color:C.acc,ls:3});},a*clamp(st*2),-.07);}
+    text('Source: Riverside South Secondary School (OCDSB)',540,1300,{size:28,weight:500,color:C.mute,alpha:a*clamp((t-20.2)/.4)});}
+  // F: two questions (21.6 - 31.6)
+  if(t>21.55&&t<31.7){const a=fadeWin(t,21.55,31.55,.3);const l=spring(t-21.65,LAND),up=smooth((t-24.3)/.6);
+    withT(540,lerp(820,400,up),lerp(lerp(1.15,1,clamp(l)),.72,up),()=>{runs([['Before you fall',C.off]],0,0,{size:92,weight:800,fam:'ID'});runs([['for a ',C.off],['kitchen',C.acc],['...',C.off]],0,110,{size:92,weight:800,fam:'ID'});},a*clamp(l*1.6));
+    const Q=[[24.75,800,'01','Which school is this','address zoned for?'],[26.9,1080,'02','Is that school over','capacity right now?']];
+    Q.forEach(([s0,Y,n,l1,l2],i)=>{const s=spring(t-s0,PANEL);if(s<=0)return;withT(540+(1-clamp(s))*120,Y,1,()=>{
+      x.fillStyle=C.card;x.strokeStyle='rgba(201,214,227,.35)';x.lineWidth=3;rr(-440,-110,880,220,28);x.fill();x.stroke();
+      text(n,-370,22,{size:72,weight:800,fam:'ID',color:C.acc,align:'left'});
+      text(l1,-230,-10,{size:44,weight:700,color:C.off,align:'left'});text(l2,-230,46,{size:44,weight:700,color:C.off,align:'left'});
+      const ck=spring(t-(29.4+i*.6),LAND);if(t>29.4+i*.6)withT(370,-60,clamp(ck,0,1.2),()=>{x.fillStyle=C.acc;x.beginPath();x.arc(0,0,30,0,7);x.fill();
+        x.strokeStyle=C.bg;x.lineWidth=7;x.lineCap='round';x.beginPath();x.moveTo(-12,1);x.lineTo(-3,11);x.lineTo(13,-9);x.stroke();});
+    },a*clamp(s*1.4));});
+    text('Boundaries change. Confirm with the board before you firm up.',540,1300,{size:28,weight:500,color:C.mute,alpha:a*clamp((t-27.6)/.4)});}
+  // G: the line (31.7 - 34.7)
+  if(t>31.65&&t<34.9){const a=fadeWin(t,31.65,34.75,.2);const l1=spring(t-31.8,LAND),l2=spring(t-33.05,LAND);
+    const shake=t>33.05&&t<33.35?Math.sin((t-33.05)*90)*8*(1-(t-33.05)/0.3):0;
+    withT(540,760,lerp(1.5,1,clamp(l1,0,1.3)),()=>text('Pick the school.',0,0,{size:110,weight:800,fam:'ID',color:C.acc}),a*clamp(l1*2));
+    withT(540+shake,920,lerp(1.5,1,clamp(l2,0,1.3)),()=>text('Then the house.',0,0,{size:110,weight:800,fam:'ID',color:C.off}),a*clamp(l2*2));}
+  // H: end card, alive (34.75 - end)
+  if(t>34.7){const s1=spring(t-34.8,PANEL),s2=spring(t-35.05,PANEL),s4=spring(t-35.4,PANEL);
+    withT(540,560+(1-s1)*40,1,()=>{text('THE CAMPBELL-MARIC GROUP',0,0,{size:44,weight:800,fam:'ID',color:C.off,ls:4});
+      x.fillStyle=C.acc;x.fillRect(-120,30,240,6);},clamp(s1*1.3));
+    withT(540,(1-s2)*40,1,()=>{runs([['Pick the school.',C.acc]],0,760,{size:80,weight:800,fam:'ID'});runs([['Then the house.',C.off]],0,856,{size:80,weight:800,fam:'ID'});},clamp(s2*1.3));
+    withT(540,1040+(1-s4)*30,1,()=>{x.fillStyle=C.card;x.strokeStyle=C.acc;x.lineWidth=4;rr(-430,-70,860,140,28);x.fill();x.stroke();
+      const url='yourhomeinottawa.ca',n=Math.floor(clamp((t-35.55)/0.9)*url.length),sub=url.slice(0,n);
+      x.font='700 60px IN';x.letterSpacing='0px';const full=x.measureText(url).width,sw=x.measureText(sub).width;
+      text(sub,-full/2,21,{size:60,weight:700,color:C.off,align:'left'});
+      if(n<url.length||Math.floor(t*2)%2===0){x.fillStyle=C.acc;x.fillRect(-full/2+sw+4,-26,5,60);}
+      if(t>36.7){const ph=((t-36.7)%2.4)/2.4;const sx=lerp(-520,520,smooth(ph*1.4));x.save();rr(-430,-70,860,140,28);x.clip();
+        const g=x.createLinearGradient(sx-90,0,sx+90,0);g.addColorStop(0,'rgba(246,244,239,0)');g.addColorStop(.5,'rgba(246,244,239,.16)');g.addColorStop(1,'rgba(246,244,239,0)');x.fillStyle=g;x.fillRect(-430,-70,860,140);x.restore();}},clamp(s4*1.3));
+    text('Boundaries change. Always confirm with the school board.',540,1180,{size:28,weight:500,color:C.mute,alpha:clamp((t-36.2)/.4)});}
+  captions(t);
+}
+window.seek=seek;window.DUR=DUR;
+window.ready=Promise.all([document.fonts.load('800 40px ID'),document.fonts.load('700 40px ID'),document.fonts.load('500 40px IN'),document.fonts.load('700 40px IN'),document.fonts.load('600 40px IN')]).then(()=>{seek(0);return true});
+</script></body></html>
