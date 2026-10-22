@@ -31,3 +31,4 @@ motion/*/bed_shaped.wav
 motion/*/mix_raw.wav
 motion/*/stills/
 motion/*/contact*.png
+motion/*/*.bak
