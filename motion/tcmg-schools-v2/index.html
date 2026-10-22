@@ -1,8 +1,10 @@
 <!doctype html>
 <html><head><meta charset="utf-8">
 <style>
-/* Manrope for body. Mansfield (headlines) was not available in the cloud session: Manrope 800 stands in. */
+/* Mansfield for headlines (no 700 file in the set, so Extra Bold carries headlines), Manrope for body. */
 @font-face{font-family:"MR";font-weight:400 800;src:url("assets/Manrope.woff2") format("woff2")}
+@font-face{font-family:"MS";font-weight:600;src:url("assets/Mansfield-Semi-Bold.ttf")}
+@font-face{font-family:"MS";font-weight:800;src:url("assets/Mansfield-Extra-Bold.ttf")}
 html,body{margin:0;background:#f1efe8}
 canvas{display:block}
 </style></head>
@@ -13,7 +15,7 @@ const W=1080,H=1920,DUR=39.5;
 // TCMG tokens (site.css)
 const C={carbon:'#121411',carbonSoft:'#1c1f1b',ink:'#171915',parch:'#f1efe8',paper:'#e7e3d8',white:'#fffdf8',line:'#cfc9ba',
   brass:'#c2a56a',brassL:'#d8c08f',brassD:'#725b2f',moss:'#59644d',mute:'#5a5b54'};
-const HEAD='MR',BODY='MR',R=4;
+const HEAD='MS',BODY='MR',R=4;
 const BROKER='The Campbell-Maric Group · eXp Realty, Brokerage';
 const cv=document.getElementById('c'),x=cv.getContext('2d');
 
@@ -177,5 +179,5 @@ function seek(t){ x._t=t; x.fillStyle=t>36.2?C.carbon:C.parch;x.fillRect(0,0,W,H
   captions(t);
 }
 window.seek=seek;window.DUR=DUR;
-window.ready=Promise.all([document.fonts.load(`800 40px MR`),document.fonts.load(`600 40px MR`),document.fonts.load(`500 40px MR`),document.fonts.load(`700 40px MR`)]).then(()=>{seek(0);return true});
+window.ready=Promise.all([document.fonts.load(`800 40px MR`),document.fonts.load(`800 40px MS`),document.fonts.load(`600 40px MS`),document.fonts.load(`600 40px MR`),document.fonts.load(`500 40px MR`),document.fonts.load(`700 40px MR`)]).then(()=>{seek(0);return true});
 </script></body></html>

@@ -24,3 +24,8 @@ data/
 # OS
 .DS_Store
 .netlify/
+motion/*/assets/Mansfield-*.ttf
+motion/*/video_only.mp4
+motion/*/render.log
+motion/*/bed_shaped.wav
+motion/*/mix_raw.wav
