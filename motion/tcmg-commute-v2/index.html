@@ -1,0 +1,109 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:"MR";font-weight:400 800;src:url("assets/Manrope.woff2") format("woff2")}
+@font-face{font-family:"MS";font-weight:600;src:url("assets/Mansfield-Semi-Bold.ttf")}
+@font-face{font-family:"MS";font-weight:800;src:url("assets/Mansfield-Extra-Bold.ttf")}
+html,body{margin:0;background:#f1efe8}
+canvas{display:block}
+</style></head>
+<body><canvas id="c" width="1080" height="1920"></canvas>
+<script src="../common/tcmg-motion.js"></script>
+<script>
+// TCMG "Test the commute". Timings follow vo.mp3 (Greg - Radio Host, take 1).
+window.DUR=41.5;
+window.CAPS=[[0.05,2.9,"Twenty minutes to downtown.|That's what the listing said."],
+[3.42,5.95,'But did anyone check at 8 on a Tuesday?'],
+[6.19,10.45,'Since July 6, most federal public servants|are in the office four days a week.'],
+[10.68,12.95,"The commute isn't a weekend question anymore."],
+[13.2,16.15,"Listings measure distance.|They don't measure rush hour."],
+[16.42,18.95,'So before you make an offer, do one test.'],
+[19.17,20.1,'Pick a weekday.'],
+[20.31,22.1,"Leave the house when you'd really leave."],
+[22.31,26.4,'Drive your actual route, or take the|real transit trip, door to desk.'],
+[26.63,28.35,'Then test your second way home.'],
+[28.57,31.25,'The O-Train, a bike path, a different bridge.'],
+[31.5,35.0,'One honest drive settles more debates|than any listing photo.'],
+[35.23,37.7,'Test the commute. Then make the offer.',1],
+[37.9,99,'More at yourhomeinottawa.ca',0,1]];
+window.END={t0:37.9,typeAt:38.15,typeDur:1.5,phoneAt:39.8,tag:['Test the commute.','Then make the offer.'],tagSize:68};
+
+function clock(r,hh,mm){x.fillStyle=C.white;x.strokeStyle=C.ink;x.lineWidth=6;x.beginPath();x.arc(0,0,r,0,7);x.fill();x.stroke();
+  x.strokeStyle=C.line;x.lineWidth=4;for(let i=0;i<12;i++){const a=i/12*Math.PI*2;x.beginPath();x.moveTo(Math.sin(a)*r*.82,-Math.cos(a)*r*.82);x.lineTo(Math.sin(a)*r*.92,-Math.cos(a)*r*.92);x.stroke();}
+  const ha=((hh%12)+mm/60)/12*Math.PI*2,ma=mm/60*Math.PI*2;x.lineCap='round';
+  x.strokeStyle=C.ink;x.lineWidth=10;x.beginPath();x.moveTo(0,0);x.lineTo(Math.sin(ha)*r*.5,-Math.cos(ha)*r*.5);x.stroke();
+  x.strokeStyle=C.brassD;x.lineWidth=6;x.beginPath();x.moveTo(0,0);x.lineTo(Math.sin(ma)*r*.75,-Math.cos(ma)*r*.75);x.stroke();
+  x.fillStyle=C.ink;x.beginPath();x.arc(0,0,10,0,7);x.fill();}
+function office(){x.fillStyle=C.white;x.strokeStyle=C.ink;x.lineWidth=4;rr(-70,-170,140,220);x.fill();x.stroke();
+  x.fillStyle=C.paper;for(let r=0;r<4;r++)for(let k=0;k<3;k++){rr(-50+k*36,-150+r*42,24,26);x.fill();}x.fillStyle=C.moss;rr(-18,10,36,40);x.fill();}
+function chip(s,{bg=C.ink,fg=C.white,size=28}={}){x.font=`800 ${size}px ${BODY}`;x.letterSpacing='3px';const w=x.measureText(s).width+44;x.letterSpacing='0px';
+  x.fillStyle=bg;rr(-w/2,-size*1.1,w,size*2);x.fill();text(s,0,size*.38,{size,weight:800,color:fg,ls:3});}
+
+window.scenes=function(t){
+  // A: the listing claim, then 8 on a Tuesday (0 - 6.0)
+  if(t<6.1){const a=1-smooth((t-5.85)/.25);const s=spring(t-0.1,LAND),up=smooth((t-3.42)/.6);
+    withT(540,lerp(740,520,up),lerp(lerp(.7,1,clamp(s,0,1.15)),.78,up),()=>{x.fillStyle=C.white;x.strokeStyle=C.line;x.lineWidth=3;rr(-380,-200,760,400);x.fill();x.stroke();
+      withT(-250,10,1,()=>house(1.3));
+      text('20 MIN',90,10,{size:150,weight:800,fam:HEAD,color:C.ink});text('TO DOWNTOWN',90,70,{size:32,weight:800,color:C.brassD,ls:5});
+      if(t>1.9){const c=spring(t-1.95,SNAP);withT(0,-200,clamp(c,0,1.2),()=>chip('THE LISTING SAYS',{bg:C.brass,fg:C.ink}));}
+      if(t>5.1){const q=spring(t-5.15,LAND);withT(360,-180,lerp(1.8,1,clamp(q,0,1.2)),()=>{x.fillStyle=C.brassD;x.beginPath();x.arc(0,0,56,0,7);x.fill();text('?',0,30,{size:84,weight:800,fam:HEAD,color:C.white});},clamp(q*2));}
+    },a*clamp(s*1.5));
+    if(t>3.5){const c=spring(t-3.6,LAND);const tt=smooth((t-3.8)/1.0);withT(540,1060+(1-clamp(c))*60,clamp(c,0,1.15),()=>clock(170,lerp(5.75,8,tt),lerp(45,0,tt)+(tt<1?0:0)),a);
+      if(t>4.6){const d=spring(t-4.65,SNAP);withT(540,1290,clamp(d,0,1.2),()=>chip('8:00 AM · TUESDAY'),a);}}
+    finePrint([BROKER],a*clamp(t/.4));}
+  // B: four days in the office (6.19 - 13.0)
+  if(t>6.1&&t<13.05){const a=fadeWin(t,6.1,12.95,.3);
+    const hs=spring(t-6.25,LAND);withT(540,400,lerp(1.2,1,clamp(hs)),()=>{text('SINCE JULY 6, 2026',0,0,{size:52,weight:800,fam:HEAD,color:C.ink});text('MOST FEDERAL PUBLIC SERVANTS',0,52,{size:28,weight:800,color:C.brassD,ls:4});},a*clamp(hs*1.6));
+    const D=['MON','TUE','WED','THU','FRI'];D.forEach((d,i)=>{const s=spring(t-(6.9+i*.12),PANEL);const lit=i<4&&t>9.0+i*.22;const X=540+(i-2)*184;
+      withT(X,720+(1-clamp(s))*40,1,()=>{x.fillStyle=lit?C.brass:C.white;x.strokeStyle=lit?C.brass:C.line;x.lineWidth=3;rr(-78,-90,156,180);x.fill();x.stroke();
+        text(d,0,lit?-48:12,{size:34,weight:800,color:C.ink,ls:2});if(lit){withT(0,50,clamp(spring(t-(9.0+i*.22),LAND),0,1.2)*.42,office,1)}},a*clamp(s*1.5));});
+        if(t>9.9){const l=spring(t-9.95,LAND);withT(540,900,lerp(1.4,1,clamp(l,0,1.2)),()=>chip('4 DAYS IN THE OFFICE',{size:34}),a*clamp(l*2));}
+    if(t>10.7){const w=spring(t-10.75,PANEL);['SAT','SUN'].forEach((d,i)=>withT(540+(i-.5)*184,1110,1,()=>{x.fillStyle=C.paper;x.strokeStyle=C.line;x.lineWidth=3;rr(-78,-70,156,140);x.fill();x.stroke();
+        text(d,0,12,{size:34,weight:800,color:C.mute,ls:2});},a*clamp(w*1.5)));
+      const k=smooth((t-11.4)/.45);x.save();x.globalAlpha=a;x.strokeStyle=C.brassD;x.lineWidth=8;x.lineCap='round';x.beginPath();x.moveTo(370,1110);x.lineTo(lerp(370,710,k),1110);x.stroke();x.restore();
+      text('NOT A WEEKEND QUESTION',540,1240,{size:28,weight:800,color:C.brassD,ls:4,alpha:a*clamp((t-11.6)/.3)});}
+    finePrint(['Source: Government of Canada, on-site presence in the public service',BROKER],a);}
+  // C: distance vs rush hour (13.2 - 16.25)
+  if(t>13.1&&t<16.3){const a=fadeWin(t,13.1,16.2,.25);
+    const l=spring(t-13.25,PANEL),r=spring(t-14.85,PANEL);
+    withT(300+(1-clamp(l))*-80,800,1,()=>{x.fillStyle=C.white;x.strokeStyle=C.line;x.lineWidth=3;rr(-210,-260,420,520);x.fill();x.stroke();
+      text('DISTANCE',0,-190,{size:34,weight:800,color:C.ink,ls:4});
+      x.fillStyle=C.brass;rr(-150,-40,300,60);x.fill();x.fillStyle=C.ink;for(let i=0;i<=10;i++)x.fillRect(-150+i*30-1,-40,3,i%5===0?34:20);
+      text('LISTINGS SHOW THIS',0,150,{size:24,weight:800,color:C.brassD,ls:3});},a*clamp(l*1.5));
+    if(t>13.4)check(13.9,t,300,1015);
+    withT(780+(1-clamp(r))*80,800,1,()=>{x.fillStyle=C.white;x.strokeStyle=C.line;x.lineWidth=3;rr(-210,-260,420,520);x.fill();x.stroke();
+      text('RUSH HOUR',0,-190,{size:34,weight:800,color:C.ink,ls:4});const sp=(t-14.85)*3;withT(0,-10,.95,()=>clock(110,8+sp,(sp*60)%60));
+      text("THEY DON'T",0,150,{size:24,weight:800,color:C.brassD,ls:3});},a*clamp(r*1.5));
+    if(t>15.3){const xk=spring(t-15.35,LAND);withT(780,1015,clamp(xk,0,1.2),()=>{x.fillStyle=C.brassD;x.beginPath();x.arc(0,0,30,0,7);x.fill();
+      x.strokeStyle=C.white;x.lineWidth=7;x.lineCap='round';x.beginPath();x.moveTo(-10,-10);x.lineTo(10,10);x.moveTo(10,-10);x.lineTo(-10,10);x.stroke();},a);}
+    finePrint([BROKER],a);}
+  // D: do one test (16.42 - 26.5)
+  if(t>16.35&&t<26.55){const a=fadeWin(t,16.35,26.45,.3);const h=spring(t-16.45,LAND),up=smooth((t-18.6)/.5);
+    withT(540,lerp(780,400,up),lerp(lerp(1.3,1,clamp(h,0,1.2)),.8,up),()=>{text('Before the offer,',0,0,{size:92,weight:800,fam:HEAD,color:C.ink});text('do one test.',0,110,{size:92,weight:800,fam:HEAD,color:C.brassD});},a*clamp(h*1.6));
+    const S=[[19.17,19.75,700,'01','Pick a weekday.'],[20.31,21.5,900,'02',"Leave when you'd really leave."],[22.31,25.7,1100,'03','Your real route, door to desk.']];
+    S.forEach(([s0,c0,Y,n,l1])=>{const s=spring(t-s0,PANEL);if(s<=0)return;withT(540+(1-clamp(s))*120,Y,1,()=>{
+      x.fillStyle=C.white;x.strokeStyle=C.line;x.lineWidth=3;rr(-440,-80,880,160);x.fill();x.stroke();
+      text(n,-370,24,{size:68,weight:800,fam:HEAD,color:C.brassD,align:'left'});text(l1,-240,14,{size:40,weight:700,color:C.ink,align:'left'});
+      check(c0,t,380,0);},a*clamp(s*1.4));});
+    finePrint([BROKER],a);}
+  // E: the second way home (26.63 - 31.35)
+  if(t>26.55&&t<31.4){const a=fadeWin(t,26.55,31.3,.25);const h=spring(t-26.7,LAND);
+    withT(540,400,lerp(1.2,1,clamp(h)),()=>{text('YOUR SECOND WAY HOME',0,0,{size:44,weight:800,fam:HEAD,color:C.ink});},a*clamp(h*1.6));
+    const HX=200,HY=1040,OX=880,OY=760;
+    withT(HX,HY,1,()=>house(1.1),a*clamp(spring(t-26.7,LAND)*2));withT(OX,OY+60,1,office,a*clamp(spring(t-26.8,LAND)*2));
+    const main=smooth((t-26.9)/.8);x.save();x.globalAlpha=a;x.strokeStyle=C.ink;x.lineWidth=10;x.lineCap='round';x.beginPath();x.moveTo(HX+60,HY-30);
+    const P=(p)=>[lerp(HX+60,OX-80,p),lerp(HY-30,OY+40,p)-Math.sin(p*Math.PI)*60];for(let p=0;p<=main;p+=.02){const[q,r]=P(p);x.lineTo(q,r);}x.stroke();x.restore();
+    const ALT=[[28.6,'O-TRAIN',-200],[29.4,'BIKE PATH',120],[30.3,'ANOTHER BRIDGE',260]];
+    ALT.forEach(([t0,l,bend])=>{const p=smooth((t-t0)/.6);if(p<=0)return;x.save();x.globalAlpha=a;x.strokeStyle=C.brassD;x.lineWidth=6;x.setLineDash([14,12]);x.lineCap='round';x.beginPath();
+      const Q=(u)=>[lerp(HX+60,OX-80,u),lerp(HY-30,OY+40,u)+Math.sin(u*Math.PI)*bend];x.moveTo(HX+60,HY-30);for(let u=0;u<=p;u+=.02){const[q,r]=Q(u);x.lineTo(q,r);}x.stroke();x.restore();
+      const[lx,ly]=Q(.5);const c=spring(t-(t0+.3),SNAP);withT(lx,ly,clamp(c,0,1.2),()=>chip(l,{bg:C.brass,fg:C.ink,size:24}),a);});
+    finePrint([BROKER],a);}
+  // F: one honest drive (31.5 - 35.1)
+  if(t>31.45&&t<35.15){const a=fadeWin(t,31.45,35.05,.2);
+    landLine('One honest drive',700,31.55,t,{size:96,a});landLine('settles more debates',830,32.45,t,{size:74,color:C.brassD,a});landLine('than any listing photo.',940,33.4,t,{size:74,a});
+    finePrint([BROKER],a);}
+  // G: the line (35.23 - 37.85)
+  if(t>35.15&&t<37.9){const a=fadeWin(t,35.15,37.8,.2);
+    landLine('Test the commute.',760,35.25,t,{size:104,color:C.brassD,a,from:1.5});landLine('Then make the offer.',900,36.39,t,{size:96,a,from:1.5});finePrint([BROKER],a);}
+};
+</script></body></html>
