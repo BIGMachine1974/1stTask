@@ -12,24 +12,24 @@ canvas{display:block}
 <script>
 // TCMG "What does a home in Ottawa actually cost?" Timings follow vo.mp3 (Greg - Radio Host, take 1).
 window.DUR=42.0;
-window.CAPS=[[0.05,2.75,'What does a home in Ottawa actually cost?',1],
-[2.89,9.0,"In September, the Ottawa Real Estate Board's|benchmark price was $623,500."],
-[9.24,11.7,"That's down 2.2% from August."],
-[11.89,15.9,'But the average sale was $685,640.'],
-[16.12,17.1,'Why the gap?'],
-[17.28,19.6,'The average gets pulled up by big sales.'],
-[19.73,23.3,"The benchmark tracks a typical home,|so it's the steadier number."],
-[23.59,25.9,"Around that budget, here's where we'd start."],
-[26.13,28.75,'Findlay Creek, for newer homes near the airport.'],
-[28.96,32.15,'Riverside South, now that the O-Train|runs to Limebank.'],
-[32.36,35.2,'And Kanata, if you work in the|Kanata North tech park.'],
-[35.41,38.3,'Start with where you work. Then pick the street.',1],
-[38.49,99,'More at yourhomeinottawa.ca',0,1]];
+window.CAPS=[[0.05,2.75,'What does a home in Ottawa *actually cost?*'],
+[2.89,9.0,"In September, the Ottawa Real Estate Board's|benchmark price was *$623,500.*"],
+[9.24,11.7,"That's *down 2.2%* from August."],
+[11.89,15.9,'But the average sale was *$685,640.*'],
+[16.12,17.1,'Why the *gap?*'],
+[17.28,19.6,'The average gets pulled up by *big sales.*'],
+[19.73,23.3,"The benchmark tracks a *typical home*,|so it's the steadier number."],
+[23.59,25.9,"Around that budget, here's *where we'd start.*"],
+[26.13,28.75,'*Findlay Creek*, for newer homes near the airport.'],
+[28.96,32.15,'*Riverside South*, now that the O-Train|runs to Limebank.'],
+[32.36,35.2,'And *Kanata*, if you work in the|Kanata North tech park.'],
+[35.41,38.3,'Start with where you work. *Then pick the street.*'],
+[38.49,99,'More at *yourhomeinottawa.ca*',0,1]];
 window.END={t0:38.49,typeAt:38.75,typeDur:1.6,phoneAt:40.5,tag:['Start with where you work.','Then pick the street.'],tagSize:64};
 const SRC='Source: Ottawa Real Estate Board (OREB), September 2026';
 
 // the hero: a price tag that counts, splits into two, then becomes a budget on the map
-function tag(val,label,{hi=false,dim=false}={}){x.save();
+function tag(val,label,{hi=false,dim=false}={}){x.save();shadow(0,140,400,.07);
   x.fillStyle=hi?C.brass:C.white;x.strokeStyle=hi?C.brass:C.ink;x.lineWidth=4;
   x.beginPath();x.moveTo(-250,-110);x.lineTo(200,-110);x.lineTo(270,0);x.lineTo(200,110);x.lineTo(-250,110);x.closePath();x.fill();x.stroke();
   x.fillStyle=C.parch;x.strokeStyle=C.ink;x.lineWidth=4;x.beginPath();x.arc(190,0,16,0,7);x.fill();x.stroke();
@@ -40,11 +40,11 @@ const money=v=>'$'+Math.round(v).toLocaleString('en-CA');
 window.scenes=function(t){
   // A: the question (0 - 2.85)
   if(t<2.95){const a=1-smooth((t-2.65)/.3);
-    landLine('What does a home',640,0.1,t,{a});landLine('in Ottawa',760,0.75,t,{a});landLine('actually cost?',900,1.35,t,{size:110,color:C.brassD,a});
+    landLine('What does a home',640,0.1,t,{a});landLine('in Ottawa',760,0.75,t,{a});landLine('*actually cost?*',900,1.35,t,{size:110,a});
     finePrint([BROKER],a*clamp(t/.4));}
   // B: benchmark tag counts to $623,500, then the 2.2% chip (2.89 - 11.75)
   if(t>2.8&&t<11.85){const a=fadeWin(t,2.8,11.75,.3);const s=spring(t-2.95,LAND);
-    text('SEPTEMBER 2026',540,420,{size:30,weight:800,color:C.brassD,ls:6,alpha:a*clamp((t-3.0)/.3)});
+    head('September *benchmark*',3.0,t,a);kicker('OTTAWA REAL ESTATE BOARD',3.2,t,a);
     withT(520,760+(1-clamp(s))*80,lerp(.6,1,clamp(s,0,1.15)),()=>tag(money(623500*smooth((t-5.6)/3.0)),'OREB BENCHMARK'),a*clamp(s*1.5),-.03*(1-clamp(s)));
     if(t>9.3){const c=spring(t-9.3,LAND);withT(540,1020,lerp(1.5,1,clamp(c,0,1.2)),()=>{x.fillStyle=C.ink;rr(-250,-46,500,92);x.fill();
       x.fillStyle=C.brassL;x.beginPath();x.moveTo(-200,-14);x.lineTo(-170,-14);x.lineTo(-185,12);x.fill();
@@ -52,6 +52,7 @@ window.scenes=function(t){
     finePrint([SRC,BROKER],a);}
   // C: benchmark vs average, the gap, why (11.89 - 23.4)
   if(t>11.8&&t<23.5){const a=fadeWin(t,11.8,23.4,.3);
+    head('Benchmark vs *average*',11.95,t,a);
     const s1=spring(t-11.9,PANEL),s2=spring(t-12.1,PANEL);const hiB=t>19.75;
     withT(470,lerp(760,600,clamp(s1)),lerp(1,.82,clamp(s1)),()=>tag('$623,500','BENCHMARK',{hi:hiB}),a);
     withT(470+(1-clamp(s2))*200,900,.82,()=>tag(money(685640*smooth((t-13.0)/2.6)),'AVERAGE SALE'),a*clamp(s2*1.5));
@@ -66,24 +67,23 @@ window.scenes=function(t){
     finePrint(['Source: OREB, September 2026. Gap is average minus benchmark.',BROKER],a);}
   // D: where we'd start (23.59 - 35.3)
   if(t>23.5&&t<35.35){const a=fadeWin(t,23.5,35.25,.3);const hs=spring(t-23.6,LAND);
-    withT(540,360,lerp(1.2,1,clamp(hs)),()=>{text('AROUND $623,500,',0,0,{size:44,weight:800,fam:HEAD,color:C.ink});text("HERE'S WHERE WE'D START",0,56,{size:30,weight:800,color:C.brassD,ls:4});},a*clamp(hs*1.6));
+    head('Around $623,500,',23.6,t,a);head("*here's where we'd start*",23.8,t,a,{y:450,size:64});
     // simple schematic map (not to scale)
-    const ms=spring(t-24.0,PANEL);withT(540,800,1,()=>{x.fillStyle=C.white;x.strokeStyle=C.line;x.lineWidth=3;rr(-460,-310,920,560);x.fill();x.stroke();
+    const ms=spring(t-24.0,PANEL);withT(540,830,1,()=>{shadow(0,268,900,.1);x.fillStyle=C.white;x.strokeStyle=C.line;x.lineWidth=3;rr(-460,-310,920,560);x.fill();x.stroke();
       x.strokeStyle='#b9c4c9';x.lineWidth=14;x.lineCap='round';x.beginPath();x.moveTo(-460,-250);x.bezierCurveTo(-200,-300,40,-180,460,-270);x.stroke();
       x.lineWidth=8;x.beginPath();x.moveTo(30,-215);x.bezierCurveTo(10,-60,70,80,40,250);x.stroke();
       x.fillStyle=C.ink;x.beginPath();x.arc(10,-170,10,0,7);x.fill();text('DOWNTOWN',10,-196,{size:20,weight:800,color:C.ink,ls:3});
       text('Schematic, not to scale',-440,232,{size:18,weight:600,color:C.mute,align:'left'});},a*clamp(ms*1.4));
-    const P=[[26.13,300,840,'FINDLAY CREEK','Newer homes near the airport'],[28.96,0,900,'RIVERSIDE SOUTH','O-Train to Limebank'],[32.36,-300,700,'KANATA','Kanata North tech park']];
+    const P=[[26.13,300,870,'FINDLAY CREEK','Newer homes near the airport'],[28.96,0,930,'RIVERSIDE SOUTH','O-Train to Limebank'],[32.36,-300,730,'KANATA','Kanata North tech park']];
     P.forEach(([t0,dx,py,n,sub],i)=>{const p=spring(t-t0,LAND);if(p<=0)return;const X=540+dx+(i===1?-30:0);
-      withT(X,py-(1-clamp(p))*120,clamp(p,0,1.2),()=>{x.fillStyle=C.brassD;x.beginPath();x.arc(0,-40,26,Math.PI*0.85,Math.PI*2.15);x.lineTo(0,0);x.closePath();x.fill();
-        x.fillStyle=C.white;x.beginPath();x.arc(0,-42,10,0,7);x.fill();},a);
+      withT(X,py-(1-clamp(p))*120,clamp(p,0,1.2),()=>pin(.75),a);
       const lp=spring(t-(t0+.2),SNAP);const lx=i===2?X+20:X,ly=py+46;
       withT(lx,ly+(1-clamp(lp))*16,1,()=>{x.font=`800 30px ${HEAD}`;const w1=x.measureText(n).width;x.font=`600 22px ${BODY}`;const w2=x.measureText(sub).width;const bw=Math.max(w1,w2)+36;
         x.fillStyle=C.ink;rr(-bw/2,0,bw,84);x.fill();text(n,0,36,{size:30,weight:800,fam:HEAD,color:C.white});text(sub,0,66,{size:22,weight:600,color:C.brassL});},a*clamp(lp*1.4));});
     finePrint(['Line 2 to Limebank: OC Transpo, January 2025',BROKER],a);}
   // E: the line (35.41 - 38.4)
   if(t>35.35&&t<38.45){const a=fadeWin(t,35.35,38.35,.2);
-    landLine('Start with',700,35.45,t,{size:100,a});landLine('where you work.',820,35.75,t,{size:100,color:C.brassD,a});
+    landLine('Start with',700,35.45,t,{size:100,a});landLine('*where you work.*',820,35.75,t,{size:100,a});
     landLine('Then pick the street.',990,36.97,t,{size:84,a,from:1.5});finePrint([BROKER],a);}
 };
 </script></body></html>

@@ -26,21 +26,40 @@ function runs(parts,X,Y,o){x.save();x.font=`${o.weight} ${o.size}px ${o.fam}`;x.
   const tw=parts.reduce((a,[s])=>a+x.measureText(s).width,0);let cx=X-tw/2;
   for(const[s,c]of parts){x.globalAlpha=o.alpha??1;x.fillStyle=c;x.textAlign='left';x.fillText(s,cx,Y);cx+=x.measureText(s).width;}x.restore();}
 function withT(tx,ty,sc,fn,alpha=1,rot=0){if(alpha<=0.001)return;x.save();x.globalAlpha*=alpha;x.translate(tx,ty);x.rotate(rot);x.scale(sc,sc);fn();x.restore();}
-function finePrint(lines,a,dark=false){lines.forEach((l,i)=>text(l,540,1584+i*32,{size:24,weight:500,color:dark?'#9a9a8f':C.mute,alpha:a}));}
-// a headline line that lands with a spring
-function landLine(s,y,t0,t,{size=92,color=C.ink,a=1,from=1.3}={}){const l=spring(t-t0,LAND);
-  withT(540,y,lerp(from,1,clamp(l,0,1.25)),()=>text(s,0,0,{size,weight:800,fam:HEAD,color}),a*clamp(l*2));}
+// matches the TCMG reels: one line of fine print, left-aligned, just above the caption bar
+const LX=84;
+function finePrint(lines,a,dark=false){const s=lines.join('  ·  ');let size=22;x.save();x.letterSpacing='0px';x.font=`600 ${size}px ${BODY}`;
+  while(x.measureText(s).width>W-2*LX&&size>16){size--;x.font=`600 ${size}px ${BODY}`;}x.restore();
+  text(s,LX,1392,{size,weight:600,color:dark?'#9a9a8f':C.mute,align:'left',alpha:a});}
+// "*word*" marks the accent word; returns [[text,color],...]
+function accent(s,base=C.ink,acc=C.brassD){return s.split('*').map((p,i)=>[p,i%2?acc:base]).filter(([p])=>p);}
+function runsL(parts,X,Y,o){x.save();x.font=`${o.weight} ${o.size}px ${o.fam}`;x.letterSpacing=(o.ls||0)+'px';let cx=X;
+  for(const[s,c]of parts){x.globalAlpha=o.alpha??1;x.fillStyle=c;x.textAlign='left';x.fillText(s,cx,Y);cx+=x.measureText(s).width;}x.restore();}
+function fitSize(parts,size,fam=HEAD,max=W-2*LX){x.save();x.letterSpacing='0px';let s=size;const wid=()=>{x.font=`800 ${s}px ${fam}`;return parts.reduce((a,[p])=>a+x.measureText(p).width,0);};
+  while(wid()>max&&s>30)s-=2;x.restore();return s;}
+// a sentence-case headline line, left-aligned, that lands with a spring
+function landLine(s,y,t0,t,{size=92,color=C.ink,a=1,from=1.3}={}){const l=spring(t-t0,LAND);const parts=accent(s,color);const sz=fitSize(parts,size);
+  withT(LX,y,lerp(from,1,clamp(l,0,1.25)),()=>runsL(parts,0,0,{size:sz,weight:800,fam:HEAD}),a*clamp(l*2));}
+// the scene title at the top, like the reels' headline
+function head(s,t0,t,a=1,{y=360,size=80}={}){landLine(s,y,t0,t,{size,a,from:1.15});}
+function kicker(s,t0,t,a=1,y=420){text(s,LX,y,{size:26,weight:800,color:C.brassD,ls:4,align:'left',alpha:a*clamp((t-t0)/.3)});}
+// soft ground shadow under objects
+function shadow(X,Y,w,al=.13){x.save();x.fillStyle=`rgba(23,25,21,${al})`;x.beginPath();x.ellipse(X,Y,w/2,w*.09,0,0,7);x.fill();x.restore();}
+function pin(sc=1){x.save();x.scale(sc,sc);shadow(0,6,70,.18);x.fillStyle=C.brass;x.strokeStyle=C.ink;x.lineWidth=5;x.beginPath();x.arc(0,-62,34,Math.PI*.82,Math.PI*2.18);x.lineTo(0,0);x.closePath();x.fill();x.stroke();
+  x.fillStyle=C.white;x.beginPath();x.arc(0,-64,14,0,7);x.fill();x.stroke();x.restore();}
 function check(t0,t,X,Y){if(t<t0)return;const ck=spring(t-t0,LAND);withT(X,Y,clamp(ck,0,1.2),()=>{x.fillStyle=C.moss;x.beginPath();x.arc(0,0,30,0,7);x.fill();
   x.strokeStyle=C.white;x.lineWidth=7;x.lineCap='round';x.beginPath();x.moveTo(-12,1);x.lineTo(-3,11);x.lineTo(13,-9);x.stroke();});}
-function house(sc=1,col=C.moss){x.save();x.scale(sc,sc);x.fillStyle=col;x.beginPath();x.moveTo(-60,-10);x.lineTo(0,-64);x.lineTo(60,-10);x.fill();
-  rr(-46,-14,92,70);x.fill();x.fillStyle=C.parch;x.fillRect(-14,18,28,38);x.restore();}
+function house(sc=1,col=C.moss){x.save();x.scale(sc,sc);shadow(0,58,130);x.fillStyle=col;x.strokeStyle=C.ink;x.lineWidth=4;x.lineJoin='round';
+  x.beginPath();x.moveTo(-46,-14);x.lineTo(-60,-12);x.lineTo(0,-66);x.lineTo(60,-12);x.lineTo(46,-14);x.lineTo(46,56);x.lineTo(-46,56);x.closePath();x.fill();x.stroke();
+  x.fillStyle=C.parch;x.fillRect(-14,18,28,38);x.restore();}
 
-// ---------- captions: bar fits its text, max 2 lines ----------
-function captions(t){for(const[a,b,s,g,dark]of window.CAPS){const al=fadeWin(t,a,b,.12);if(al<=0)continue;
-  const lines=s.split('|');x.save();x.font=`600 36px ${BODY}`;const tw=Math.max(...lines.map(l=>x.measureText(l).width));x.restore();
-  const bw=tw+64,h=lines.length>1?132:84,y=1458-h/2+(1-spring(t-a,SNAP))*12;
-  x.save();x.globalAlpha=al;x.fillStyle=dark?C.carbonSoft:C.white;x.strokeStyle=dark?'#33372f':C.line;x.lineWidth=2;rr(540-bw/2,y,bw,h);x.fill();x.stroke();x.restore();
-  lines.forEach((l,i)=>text(l,540,y+(lines.length>1?54+i*46:55),{size:36,weight:g?800:600,color:dark?C.white:(g?C.brassD:C.ink),alpha:al}));}}
+// ---------- captions: dark bar, left-aligned, fits its text, max 2 lines, "*word*" in brass ----------
+function captions(t){for(const[a,b,s,,dark]of window.CAPS){const al=fadeWin(t,a,b,.12);if(al<=0)continue;
+  const lines=s.split('|').map(l=>accent(l,C.white,C.brassL));x.save();x.letterSpacing='0px';x.font=`700 38px ${BODY}`;
+  const tw=Math.max(...lines.map(p=>p.reduce((q,[z])=>q+x.measureText(z).width,0)));x.restore();
+  const bw=tw+56,h=lines.length>1?134:84,y=1440+(1-spring(t-a,SNAP))*12;
+  x.save();x.globalAlpha=al;x.fillStyle=dark?C.carbonSoft:C.ink;if(dark){x.strokeStyle='#33372f';x.lineWidth=2;}rr(LX-24,y,bw,h);x.fill();if(dark)x.stroke();x.restore();
+  lines.forEach((p,i)=>runsL(p,LX+4,y+(lines.length>1?55+i*48:55),{size:38,weight:700,fam:BODY,alpha:al}));}}
 
 // ---------- end card on carbon ----------
 function endCard(t){const E=window.END;if(t<E.t0-0.25)return;
@@ -60,6 +79,9 @@ function endCard(t){const E=window.END;if(t<E.t0-0.25)return;
   withT(540,1130+(1-s4)*20,1,()=>text('613-558-3294',0,0,{size:48,weight:800,color:C.brassL,ls:2}),clamp(s4*1.3));
   finePrint([BROKER].concat(E.note?[E.note]:[]),clamp((t-(E.t0+.55))/.4),true);}
 
-function seek(t){x._t=t;x.fillStyle=C.parch;x.fillRect(0,0,W,H);window.scenes(t);endCard(t);captions(t);}
+// static warm vignette like the reels (no animation: an animated glow caused keyframe flashes)
+function bg(){x.fillStyle=C.parch;x.fillRect(0,0,W,H);const g=x.createRadialGradient(540,860,80,540,860,1150);
+  g.addColorStop(0,'rgba(255,253,248,.55)');g.addColorStop(.55,'rgba(241,239,232,0)');g.addColorStop(1,'rgba(214,206,188,.45)');x.fillStyle=g;x.fillRect(0,0,W,H);}
+function seek(t){x._t=t;bg();window.scenes(t);endCard(t);captions(t);}
 window.seek=seek;
 window.ready=Promise.all(['800 40px MR','600 40px MR','500 40px MR','700 40px MR','800 40px MS','600 40px MS'].map(f=>document.fonts.load(f))).then(()=>{seek(0);return true});

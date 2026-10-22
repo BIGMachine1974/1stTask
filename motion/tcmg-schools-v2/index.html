@@ -1,7 +1,6 @@
 <!doctype html>
 <html><head><meta charset="utf-8">
 <style>
-/* Mansfield for headlines (no 700 file in the set, so Extra Bold carries headlines), Manrope for body. */
 @font-face{font-family:"MR";font-weight:400 800;src:url("assets/Manrope.woff2") format("woff2")}
 @font-face{font-family:"MS";font-weight:600;src:url("assets/Mansfield-Semi-Bold.ttf")}
 @font-face{font-family:"MS";font-weight:800;src:url("assets/Mansfield-Extra-Bold.ttf")}
@@ -9,55 +8,23 @@ html,body{margin:0;background:#f1efe8}
 canvas{display:block}
 </style></head>
 <body><canvas id="c" width="1080" height="1920"></canvas>
+<script src="../common/tcmg-motion.js"></script>
 <script>
-// TCMG "The catchment trap", motion v2: seek(t) draws frame t. Timings follow vo.mp3 (Greg - Radio Host, take 1).
-const W=1080,H=1920,DUR=39.5;
-// TCMG tokens (site.css)
-const C={carbon:'#121411',carbonSoft:'#1c1f1b',ink:'#171915',parch:'#f1efe8',paper:'#e7e3d8',white:'#fffdf8',line:'#cfc9ba',
-  brass:'#c2a56a',brassL:'#d8c08f',brassD:'#725b2f',moss:'#59644d',mute:'#5a5b54'};
-const HEAD='MS',BODY='MR',R=4;
-const BROKER='The Campbell-Maric Group · eXp Realty, Brokerage';
-const cv=document.getElementById('c'),x=cv.getContext('2d');
-
-// ---------- motion helpers ----------
-const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
-const lerp=(a,b,p)=>a+(b-a)*p;
-const smooth=p=>{p=clamp(p);return p*p*(3-2*p)};
-function spring(dt,{w,z}){ if(dt<=0)return 0;
-  if(z<1){const wd=w*Math.sqrt(1-z*z);return 1-Math.exp(-z*w*dt)*(Math.cos(wd*dt)+z*w/wd*Math.sin(wd*dt));}
-  return 1-Math.exp(-w*dt)*(1+w*dt);}
-const SNAP={w:26,z:.85}, PANEL={w:15,z:.72}, LAND={w:17,z:.48};
-const fadeWin=(t,a,b,f=.25)=>clamp(Math.min((t-a)/f,(b-t)/f));
-
-// ---------- drawing helpers ----------
-function rr(X,Y,w,h,r=R){x.beginPath();x.roundRect(X,Y,w,h,r);}
-function text(s,X,Y,{size=40,weight=600,fam=BODY,color=C.ink,align='center',ls=0,alpha=1}={}){
-  x.save();x.globalAlpha*=alpha;x.font=`${weight} ${size}px ${fam}`;x.fillStyle=color;x.textAlign=align;x.textBaseline='alphabetic';
-  x.letterSpacing=ls+'px';x.fillText(s,X,Y);x.restore();}
-function runs(parts,X,Y,o){x.save();x.font=`${o.weight} ${o.size}px ${o.fam}`;x.letterSpacing=(o.ls||0)+'px';
-  const tw=parts.reduce((a,[s])=>a+x.measureText(s).width,0);let cx=X-tw/2;
-  for(const[s,c]of parts){x.globalAlpha=o.alpha??1;x.fillStyle=c;x.textAlign='left';x.fillText(s,cx,Y);cx+=x.measureText(s).width;}x.restore();}
-function withT(tx,ty,sc,fn,alpha=1,rot=0){if(alpha<=0.001)return;x.save();x.globalAlpha*=alpha;x.translate(tx,ty);x.rotate(rot);x.scale(sc,sc);fn();x.restore();}
-function finePrint(lines,a,dark=false){lines.forEach((l,i)=>text(l,540,1584+i*32,{size:24,weight:500,color:dark?'#9a9a8f':C.mute,alpha:a}));}
-
-// ---------- captions: bar fits its text, max 2 lines ----------
-const CAPS=[[0.05,2.85,"Being in the catchment doesn't mean|your kid gets a seat."],
-[3.15,4.95,'Ottawa has four school boards,'],
-[4.95,7.85,'and every address maps to|a different school on each one.'],
-[8.18,10.85,'In the south end, the map|is only half the story.'],
-[11.2,15.75,'Vimy Ridge Public School in Findlay Creek|was built for 674 students.'],
-[15.98,19.5,'By 2022, it had 17 portables in the yard.'],
-[19.8,24.15,'Riverside South went without a public|high school until September 2025.'],
-[24.44,28.35,'So before you fall for a kitchen,|call the board and ask two questions.'],
-[28.53,30.7,'Which school is this address zoned for?'],
-[30.79,33.85,'And is that school over capacity right now?'],
-[34.0,36.0,'Pick the school. Then the house.',1],
-[36.23,DUR+1,'More at yourhomeinottawa.ca',0,1]];
-function captions(t){for(const[a,b,s,g,dark]of CAPS){const al=fadeWin(t,a,b,.12);if(al<=0)continue;
-  const lines=s.split('|');x.save();x.font=`600 36px ${BODY}`;const tw=Math.max(...lines.map(l=>x.measureText(l).width));x.restore();
-  const bw=tw+64,h=lines.length>1?132:84,y=1458-h/2+(1-spring(t-a,SNAP))*12;
-  x.save();x.globalAlpha=al;x.fillStyle=dark?C.carbonSoft:C.white;x.strokeStyle=dark?'#33372f':C.line;x.lineWidth=2;rr(540-bw/2,y,bw,h);x.fill();x.stroke();x.restore();
-  lines.forEach((l,i)=>text(l,540,y+(lines.length>1?54+i*46:55),{size:36,weight:g?800:600,color:dark?C.white:(g?C.brassD:C.ink),alpha:al}));}}
+// TCMG "The catchment trap". Timings follow vo.mp3 (Greg - Radio Host, take 1).
+window.DUR=39.5;
+window.CAPS=[[0.05,2.85,"Being in the catchment doesn't mean|your kid *gets a seat.*"],
+[3.15,4.95,'Ottawa has *four school boards*,'],
+[4.95,7.85,'and every address maps to|a *different school* on each one.'],
+[8.18,10.85,'In the south end, the map|is only *half the story.*'],
+[11.2,15.75,'Vimy Ridge Public School in Findlay Creek|was built for *674 students.*'],
+[15.98,19.5,'By 2022, it had *17 portables* in the yard.'],
+[19.8,24.15,'Riverside South went without a public|high school until *September 2025.*'],
+[24.44,28.35,'So before you fall for a kitchen,|*call the board* and ask two questions.'],
+[28.53,30.7,'Which school is this address *zoned for?*'],
+[30.79,33.85,'And is that school *over capacity* right now?'],
+[34.0,36.0,'Pick the school. *Then the house.*'],
+[36.23,99,'More at *yourhomeinottawa.ca*',0,1]];
+window.END={t0:36.23,typeAt:36.55,typeDur:1.5,phoneAt:38.3,tag:['Pick the school.','Then the house.'],note:'Boundaries change. Always confirm with the school board.'};
 
 // ---------- scene pieces ----------
 // the hero: one school building, reused for Vimy Ridge and Riverside South
@@ -65,7 +32,7 @@ function school(cx,base,w,h,{rise=1,dashed=false,alpha=1}={}){
   x.save();x.globalAlpha*=alpha;
   if(dashed){x.strokeStyle=C.mute;x.lineWidth=4;x.setLineDash([16,12]);rr(cx-w/2,base-h,w,h);x.stroke();
     text('?',cx,base-h/2+40,{size:120,weight:800,fam:HEAD,color:C.mute});x.restore();return;}
-  const hh=h*clamp(rise,0,1.12);
+  const hh=h*clamp(rise,0,1.12);shadow(cx,base+10,w*1.05,.12*clamp(rise));
   x.fillStyle=C.white;x.strokeStyle=C.ink;x.lineWidth=4;rr(cx-w/2,base-hh,w,hh);x.fill();x.stroke();
   if(rise>.75){const a=clamp((rise-.75)/.25);x.globalAlpha*=a;
     x.fillStyle=C.brass;x.fillRect(cx-w/2+2,base-hh+2,w-4,18);
@@ -77,23 +44,17 @@ function school(cx,base,w,h,{rise=1,dashed=false,alpha=1}={}){
 function portable(){x.fillStyle=C.paper;x.strokeStyle=C.ink;x.lineWidth=3;rr(-40,-22,80,44);x.fill();x.stroke();x.fillStyle=C.ink;x.fillRect(-26,-9,16,12);x.fillRect(10,-9,16,12);}
 function boardTile(l1,l2,lit){x.fillStyle=lit?C.brass:C.white;x.strokeStyle=lit?C.brass:C.line;x.lineWidth=3;rr(-200,-90,400,180);x.fill();x.stroke();
   text(l1,0,-8,{size:40,weight:800,fam:HEAD,color:C.ink});text(l2,0,42,{size:28,weight:700,color:lit?C.ink:C.brassD,ls:4});}
-function house(){x.fillStyle=C.moss;x.beginPath();x.moveTo(-60,-10);x.lineTo(0,-64);x.lineTo(60,-10);x.fill();
-  rr(-46,-14,92,70);x.fill();x.fillStyle=C.parch;x.fillRect(-14,18,28,38);}
 
-// ---------- the frame function ----------
-function seek(t){ x._t=t; x.fillStyle=t>36.2?C.carbon:C.parch;x.fillRect(0,0,W,H);
-  if(t>36.0&&t<36.45){const p=smooth((t-36.0)/.45);x.fillStyle=C.carbon;x.fillRect(0,H*(1-p),W,H*p);} // end card wipes up
+window.scenes=function(t){
   // A: hook (0 - 3.0)
   if(t<3.1){const a=1-smooth((t-2.8)/.3);const l1=spring(t-0.15,LAND),l2=spring(t-1.15,LAND),l3=spring(t-2.1,LAND);
-    withT(540,620,lerp(1.3,1,clamp(l1,0,1.2)),()=>text('IN THE CATCHMENT',0,0,{size:84,weight:800,fam:HEAD,color:C.ink}),a*clamp(l1*2));
-    withT(540,750,lerp(1.3,1,clamp(l2,0,1.2)),()=>text("DOESN'T MEAN",0,0,{size:84,weight:800,fam:HEAD,color:C.mute}),a*clamp(l2*2));
-    withT(540,960,lerp(1.6,1,clamp(l3,0,1.3)),()=>{text('A SEAT.',0,0,{size:200,weight:800,fam:HEAD,color:C.brassD});
-      const u=smooth((t-2.35)/.35);x.fillStyle=C.brass;x.fillRect(-300,36,600*u,12);},a*clamp(l3*2));
+    landLine('In the catchment',640,0.15,t,{size:96,a});landLine("doesn't mean",760,1.15,t,{size:96,color:C.mute,a});
+    landLine('*a seat.*',960,2.1,t,{size:200,a,from:1.6});
     finePrint([BROKER],a*clamp(t/.4));}
   // B: four boards, one address (3.15 - 8.1)
   if(t>3.05&&t<8.2){const a=fadeWin(t,3.05,8.05,.3);
     const T=[[300,520,'ENGLISH','PUBLIC'],[780,520,'ENGLISH','CATHOLIC'],[300,760,'FRENCH','PUBLIC'],[780,760,'FRENCH','CATHOLIC']];
-    text('OTTAWA HAS FOUR SCHOOL BOARDS',540,360,{size:30,weight:700,color:C.brassD,ls:5,alpha:a*clamp((t-3.2)/.3)});
+    head('Four school *boards*',3.2,t,a);
     const hp=spring(t-5.35,LAND),HX=540,HY=1150;
     if(t>5.3)T.forEach(([X,Y],i)=>{const p=smooth((t-(6.0+i*.25))/.45);if(p<=0)return;const ex=lerp(HX,X,p),ey=lerp(HY-70,Y+90,p);
         x.save();x.globalAlpha=a;x.strokeStyle=C.brassD;x.lineWidth=4;x.setLineDash([12,10]);x.beginPath();x.moveTo(HX,HY-70);x.lineTo(ex,ey);x.stroke();x.restore();});
@@ -102,18 +63,15 @@ function seek(t){ x._t=t; x.fillStyle=t>36.2?C.carbon:C.parch;x.fillRect(0,0,W,H
     if(t>5.3){withT(HX,HY-(1-clamp(hp))*200,lerp(.6,1,clamp(hp,0,1.2)),house,a*clamp(hp*2));
       text('ONE ADDRESS',HX,HY+100,{size:28,weight:700,color:C.ink,ls:5,alpha:a*clamp((t-5.6)/.3)});
       T.forEach(([X,Y],i)=>{if(t<6.45+i*.25)return;const d=spring(t-(6.45+i*.25),SNAP);withT(X,Y+90,clamp(d,0,1.2),()=>{x.fillStyle=C.ink;x.beginPath();x.arc(0,0,13,0,7);x.fill();},a);});
-      runs([['4 boards = ',C.ink],['4 different schools',C.brassD]],540,1330,{size:44,weight:800,fam:BODY,alpha:a*clamp((t-6.9)/.3)});}
+      runs([['4 boards = ',C.ink],['4 different schools',C.brassD]],540,1320,{size:44,weight:800,fam:BODY,alpha:a*clamp((t-6.9)/.3)});}
     finePrint(['Boards: OCDSB, OCSB, CEPEO, CECCE',BROKER],a);}
   // C: half the story (8.18 - 11.0)
   if(t>8.1&&t<11.1){const a=fadeWin(t,8.1,10.95,.25);const l=spring(t-8.2,LAND);
-    withT(540,820,lerp(1.15,1,clamp(l)),()=>{runs([['The map is only',C.ink]],0,0,{size:90,weight:800,fam:HEAD});runs([['half',C.brassD],[' the story.',C.ink]],0,110,{size:90,weight:800,fam:HEAD});
-      x.font=`800 90px ${HEAD}`;const tot=x.measureText('half the story.').width,hw=x.measureText('half').width;const u=smooth((t-9.75)/.35);
-      x.fillStyle=C.brass;x.fillRect(-tot/2,132,hw*u,10);},a*clamp(l*1.6));
+    landLine('The map is only',820,8.2,t,{size:96,a});landLine('*half* the story.',935,8.4,t,{size:96,a});
     finePrint([BROKER],a);}
   // D: Vimy Ridge fills to 674, overflows into 17 portables (11.2 - 19.6)
   if(t>11.1&&t<19.75){const a=fadeWin(t,11.1,19.6,.3);const rise=spring(t-11.25,PANEL);
-    text('VIMY RIDGE PUBLIC SCHOOL',540,360,{size:42,weight:800,fam:HEAD,color:C.ink,alpha:a*clamp((t-11.3)/.3)});
-    text('FINDLAY CREEK',540,408,{size:28,weight:700,color:C.brassD,ls:6,alpha:a*clamp((t-11.4)/.3)});
+    head('Vimy Ridge *Public School*',11.3,t,a,{size:72});kicker('FINDLAY CREEK',11.4,t,a);
     school(540,900,560,300,{rise,alpha:a});
     const fillP=smooth((t-13.4)/1.5);const cnt=Math.round(674*fillP);const cl=spring(t-13.4,SNAP);
     withT(540,535,lerp(.8,1,clamp(cl)),()=>{x.fillStyle=C.parch;rr(-210,-92,420,148);x.fill();
@@ -135,7 +93,7 @@ function seek(t){ x._t=t; x.fillStyle=t>36.2?C.carbon:C.parch;x.fillRect(0,0,W,H
     finePrint(['Capacity: OCDSB. Portables: Ottawa Citizen, 2022.',BROKER],a);}
   // E: Riverside South, the outline becomes a school (19.8 - 24.3)
   if(t>19.7&&t<24.35){const a=fadeWin(t,19.7,24.2,.25);
-    text('RIVERSIDE SOUTH',540,380,{size:52,weight:800,fam:HEAD,color:C.ink,alpha:a*clamp((t-19.85)/.3)});
+    head('Riverside *South*',19.85,t,a);
     const built=t>22.6;const rise=spring(t-22.65,LAND);
     if(!built)school(540,1010,600,380,{dashed:true,alpha:a*clamp((t-19.9)/.3)});else school(540,1010,600,380,{rise,alpha:a});
     if(!built)text('NO PUBLIC HIGH SCHOOL',540,1110,{size:32,weight:800,color:C.mute,ls:4,alpha:a*clamp((t-20.4)/.3)});
@@ -145,8 +103,8 @@ function seek(t){ x._t=t; x.fillStyle=t>36.2?C.carbon:C.parch;x.fillRect(0,0,W,H
     finePrint(['Source: Riverside South Secondary School (OCDSB)',BROKER],a);}
   // F: two questions (24.44 - 33.95)
   if(t>24.35&&t<34.0){const a=fadeWin(t,24.35,33.9,.3);const l=spring(t-24.45,LAND),up=smooth((t-26.25)/.6);
-    withT(540,lerp(800,440,up),lerp(lerp(1.15,1,clamp(l)),.72,up),()=>{runs([['Before you fall',C.ink]],0,0,{size:92,weight:800,fam:HEAD});runs([['for a ',C.ink],['kitchen',C.brassD],['...',C.ink]],0,110,{size:92,weight:800,fam:HEAD});},a*clamp(l*1.6));
-    if(t>26.4)text('CALL THE BOARD. ASK TWO QUESTIONS.',540,610,{size:28,weight:800,color:C.brassD,ls:4,alpha:a*clamp((t-26.5)/.3)});
+    head('Before you fall',24.45,t,a);head('for a *kitchen*...',24.65,t,a,{y:460});
+    if(t>26.4)kicker('CALL THE BOARD. ASK TWO QUESTIONS.',26.5,t,a,540);
     const Q=[[28.53,30.3,800,'01','Which school is this','address zoned for?'],[30.79,33.2,1060,'02','Is that school over','capacity right now?']];
     Q.forEach(([s0,ck0,Y,n,l1,l2])=>{const s=spring(t-s0,PANEL);if(s<=0)return;withT(540+(1-clamp(s))*120,Y,1,()=>{
       x.fillStyle=C.white;x.strokeStyle=C.line;x.lineWidth=3;rr(-440,-105,880,210);x.fill();x.stroke();
@@ -159,25 +117,7 @@ function seek(t){ x._t=t; x.fillStyle=t>36.2?C.carbon:C.parch;x.fillRect(0,0,W,H
   // G: the line (34.0 - 36.1)
   if(t>33.95&&t<36.2){const a=fadeWin(t,33.95,36.05,.2);const l1=spring(t-34.0,LAND),l2=spring(t-35.06,LAND);
     const shake=t>35.06&&t<35.36?Math.sin((t-35.06)*90)*8*(1-(t-35.06)/0.3):0;
-    withT(540,780,lerp(1.5,1,clamp(l1,0,1.3)),()=>text('Pick the school.',0,0,{size:112,weight:800,fam:HEAD,color:C.brassD}),a*clamp(l1*2));
-    withT(540+shake,930,lerp(1.5,1,clamp(l2,0,1.3)),()=>text('Then the house.',0,0,{size:112,weight:800,fam:HEAD,color:C.ink}),a*clamp(l2*2));
+    landLine('*Pick the school.*',780,34.0,t,{size:112,a,from:1.5});landLine('Then the house.',930,35.06,t,{size:112,a,from:1.5});
     finePrint([BROKER],a);}
-  // H: end card on carbon (36.23 - end)
-  if(t>36.25){const s1=spring(t-36.3,PANEL),s2=spring(t-36.5,PANEL),s3=spring(t-36.45,PANEL),s4=spring(t-38.3,PANEL);
-    withT(540,470+(1-s1)*40,1,()=>{text('THE CAMPBELL-MARIC GROUP',0,0,{size:46,weight:800,fam:HEAD,color:C.white,ls:4});
-      x.fillStyle=C.brassL;x.fillRect(-120,30,240,5);},clamp(s1*1.3));
-    withT(540,(1-s2)*40,1,()=>{runs([['Pick the school.',C.brassL]],0,680,{size:80,weight:800,fam:HEAD});runs([['Then the house.',C.white]],0,776,{size:80,weight:800,fam:HEAD});},clamp(s2*1.3));
-    withT(540,960+(1-s3)*30,1,()=>{x.fillStyle=C.carbonSoft;x.strokeStyle=C.brassL;x.lineWidth=3;rr(-430,-70,860,140);x.fill();x.stroke();
-      const url='yourhomeinottawa.ca',n=Math.floor(clamp((t-36.55)/1.5)*url.length),sub=url.slice(0,n);
-      x.font=`800 60px ${BODY}`;x.letterSpacing='0px';const full=x.measureText(url).width,sw=x.measureText(sub).width;
-      text(sub,-full/2,21,{size:60,weight:800,color:C.white,align:'left'});
-      if(n<url.length||Math.floor(t*2)%2===0){x.fillStyle=C.brassL;x.fillRect(-full/2+sw+4,-26,5,60);}
-      if(t>38.2){const ph=((t-38.2)%2.4)/2.4;const sx=lerp(-520,520,smooth(ph*1.4));x.save();rr(-430,-70,860,140);x.clip();
-        const g=x.createLinearGradient(sx-90,0,sx+90,0);g.addColorStop(0,'rgba(255,253,248,0)');g.addColorStop(.5,'rgba(255,253,248,.14)');g.addColorStop(1,'rgba(255,253,248,0)');x.fillStyle=g;x.fillRect(-430,-70,860,140);x.restore();}},clamp(s3*1.3));
-    withT(540,1130+(1-s4)*20,1,()=>text('613-558-3294',0,0,{size:48,weight:800,color:C.brassL,ls:2}),clamp(s4*1.3));
-    finePrint([BROKER,'Boundaries change. Always confirm with the school board.'],clamp((t-36.8)/.4),true);}
-  captions(t);
-}
-window.seek=seek;window.DUR=DUR;
-window.ready=Promise.all([document.fonts.load(`800 40px MR`),document.fonts.load(`800 40px MS`),document.fonts.load(`600 40px MS`),document.fonts.load(`600 40px MR`),document.fonts.load(`500 40px MR`),document.fonts.load(`700 40px MR`)]).then(()=>{seek(0);return true});
+};
 </script></body></html>
