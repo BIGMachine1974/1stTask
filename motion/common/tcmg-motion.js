@@ -1,5 +1,5 @@
 // TCMG motion v2 shared kit: brand tokens, springs, drawing helpers, captions, fine print, end card.
-// A video page sets window.DUR, window.CAPS, window.END ({t0, typeAt, typeDur, phoneAt, tag:[l1,l2], note}) and window.scenes(t).
+// A video page sets window.DUR, window.CAPS, window.END ({t0, typeAt, typeDur, phoneAt, tag:[white line, brass line]}) and window.scenes(t).
 const W=1080,H=1920;
 const C={carbon:'#121411',carbonSoft:'#1c1f1b',ink:'#171915',parch:'#f1efe8',paper:'#e7e3d8',white:'#fffdf8',line:'#cfc9ba',
   brass:'#c2a56a',brassL:'#d8c08f',brassD:'#725b2f',moss:'#59644d',mute:'#5a5b54'};
@@ -58,26 +58,32 @@ function house(sc=1,col=C.moss){x.save();x.scale(sc,sc);shadow(0,58,130);x.fillS
 function captions(t){for(const[a,b,s,,dark]of window.CAPS){const al=fadeWin(t,a,b,.12);if(al<=0)continue;
   const lines=s.split('|').map(l=>accent(l,C.white,C.brassL));x.save();x.letterSpacing='0px';x.font=`700 38px ${BODY}`;
   const tw=Math.max(...lines.map(p=>p.reduce((q,[z])=>q+x.measureText(z).width,0)));x.restore();
-  const bw=tw+56,h=lines.length>1?134:84,y=1440+(1-spring(t-a,SNAP))*12;
-  x.save();x.globalAlpha=al;x.fillStyle=dark?C.carbonSoft:C.ink;if(dark){x.strokeStyle='#33372f';x.lineWidth=2;}rr(LX-24,y,bw,h);x.fill();if(dark)x.stroke();x.restore();
+  const h=lines.length>1?134:84;
+  if(dark){const y=1508-h/2+(1-spring(t-a,SNAP))*12;x.save();x.globalAlpha=al;x.fillStyle=C.carbonSoft;x.strokeStyle='#33372f';x.lineWidth=2;rr(540-(tw+64)/2,y,tw+64,h);x.fill();x.stroke();x.restore();
+    lines.forEach((p,i)=>runs(p,540,y+(lines.length>1?55+i*48:55),{size:38,weight:700,fam:BODY,alpha:al}));continue;}
+  const bw=tw+56,y=1440+(1-spring(t-a,SNAP))*12;
+  x.save();x.globalAlpha=al;x.fillStyle=C.ink;rr(LX-24,y,bw,h);x.fill();x.restore();
   lines.forEach((p,i)=>runsL(p,LX+4,y+(lines.length>1?55+i*48:55),{size:38,weight:700,fam:BODY,alpha:al}));}}
 
-// ---------- end card on carbon ----------
+// ---------- end card on carbon: matches the current TCMG reels ----------
+const PHONE='613-799-9022';
 function endCard(t){const E=window.END;if(t<E.t0-0.25)return;
   if(t<E.t0+0.2){const p=smooth((t-(E.t0-0.25))/.45);x.fillStyle=C.carbon;x.fillRect(0,H*(1-p),W,H*p);}else{x.fillStyle=C.carbon;x.fillRect(0,0,W,H);}
   if(t<E.t0)return;
   const s1=spring(t-(E.t0+.05),PANEL),s2=spring(t-(E.t0+.25),PANEL),s3=spring(t-(E.t0+.2),PANEL),s4=spring(t-E.phoneAt,PANEL);
-  withT(540,450+(1-s1)*40,1,()=>{const lw=820,lh=lw*LOGO.naturalHeight/LOGO.naturalWidth;x.drawImage(LOGO,-lw/2,-lh/2,lw,lh);},clamp(s1*1.3));
-  withT(540,(1-s2)*40,1,()=>{const ts=E.tagSize||80;runs([[E.tag[0],C.brassL]],0,680,{size:ts,weight:800,fam:HEAD});runs([[E.tag[1],C.white]],0,680+ts*1.2,{size:ts,weight:800,fam:HEAD});},clamp(s2*1.3));
-  withT(540,960+(1-s3)*30,1,()=>{x.fillStyle=C.carbonSoft;x.strokeStyle=C.brassL;x.lineWidth=3;rr(-430,-70,860,140);x.fill();x.stroke();
+  withT(540,575+(1-s1)*40,1,()=>{const lw=720,lh=lw*LOGO.naturalHeight/LOGO.naturalWidth;x.drawImage(LOGO,-lw/2,-lh/2,lw,lh);},clamp(s1*1.3));
+  // two-line headline: white, then light brass
+  const hs=Math.min(fitSize([[E.tag[0],0]],96,HEAD,900),fitSize([[E.tag[1],0]],96,HEAD,900));
+  withT(540,(1-s2)*40,1,()=>{text(E.tag[0],0,860,{size:hs,weight:800,fam:HEAD,color:C.white});text(E.tag[1],0,860+hs*1.1,{size:hs,weight:800,fam:HEAD,color:C.brassL});},clamp(s2*1.3));
+  withT(540,1158+(1-s3)*30,1,()=>{x.fillStyle=C.carbonSoft;x.strokeStyle=C.brass;x.lineWidth=3;rr(-406,-72,812,144,8);x.fill();x.stroke();
     const url='yourhomeinottawa.ca',n=Math.floor(clamp((t-E.typeAt)/E.typeDur)*url.length),sub=url.slice(0,n);
-    x.font=`800 60px ${BODY}`;x.letterSpacing='0px';const full=x.measureText(url).width,sw=x.measureText(sub).width;
-    text(sub,-full/2,21,{size:60,weight:800,color:C.white,align:'left'});
-    if(n<url.length||Math.floor(t*2)%2===0){x.fillStyle=C.brassL;x.fillRect(-full/2+sw+4,-26,5,60);}
-    const sh=E.typeAt+E.typeDur+.2;if(t>sh){const ph=((t-sh)%2.4)/2.4;const sx=lerp(-520,520,smooth(ph*1.4));x.save();rr(-430,-70,860,140);x.clip();
-      const g=x.createLinearGradient(sx-90,0,sx+90,0);g.addColorStop(0,'rgba(255,253,248,0)');g.addColorStop(.5,'rgba(255,253,248,.14)');g.addColorStop(1,'rgba(255,253,248,0)');x.fillStyle=g;x.fillRect(-430,-70,860,140);x.restore();}},clamp(s3*1.3));
-  withT(540,1130+(1-s4)*20,1,()=>text('613-558-3294',0,0,{size:48,weight:800,color:C.brassL,ls:2}),clamp(s4*1.3));
-  finePrint([BROKER].concat(E.note?[E.note]:[]),clamp((t-(E.t0+.55))/.4),true);}
+    x.font=`800 62px ${BODY}`;x.letterSpacing='0px';const full=x.measureText(url).width,sw=x.measureText(sub).width;
+    text(sub,-full/2,22,{size:62,weight:800,color:C.white,align:'left'});
+    if(n<url.length||Math.floor(t*2)%2===0){x.fillStyle=C.brassL;x.fillRect(-full/2+sw+6,-30,5,62);}
+    const sh=E.typeAt+E.typeDur+.2;if(t>sh){const ph=((t-sh)%2.4)/2.4;const sx=lerp(-520,520,smooth(ph*1.4));x.save();rr(-406,-72,812,144,8);x.clip();
+      const g=x.createLinearGradient(sx-90,0,sx+90,0);g.addColorStop(0,'rgba(255,253,248,0)');g.addColorStop(.5,'rgba(255,253,248,.14)');g.addColorStop(1,'rgba(255,253,248,0)');x.fillStyle=g;x.fillRect(-406,-72,812,144);x.restore();}},clamp(s3*1.3));
+  withT(540,1326+(1-s4)*20,1,()=>text('Talk to us first. '+PHONE,0,0,{size:36,weight:700,color:'#a9a79f'}),clamp(s4*1.3));
+  withT(540,1392+(1-s4)*20,1,()=>text('eXp Realty, Brokerage',0,0,{size:30,weight:700,color:'#8f8d86',ls:1}),clamp((s4-.1)*1.3));}
 
 // static warm vignette like the reels (no animation: an animated glow caused keyframe flashes)
 function bg(){x.fillStyle=C.parch;x.fillRect(0,0,W,H);const g=x.createRadialGradient(540,860,80,540,860,1150);
