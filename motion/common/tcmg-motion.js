@@ -6,6 +6,7 @@ const C={carbon:'#121411',carbonSoft:'#1c1f1b',ink:'#171915',parch:'#f1efe8',pap
 const HEAD='MS',BODY='MR',R=4;
 const BROKER='The Campbell-Maric Group · eXp Realty, Brokerage';
 const cv=document.getElementById('c'),x=cv.getContext('2d');
+const LOGO=new Image();LOGO.src='../common/lockup-light.png'; // TCMG lockup, light version for the carbon end card
 
 // ---------- motion helpers ----------
 const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
@@ -66,8 +67,7 @@ function endCard(t){const E=window.END;if(t<E.t0-0.25)return;
   if(t<E.t0+0.2){const p=smooth((t-(E.t0-0.25))/.45);x.fillStyle=C.carbon;x.fillRect(0,H*(1-p),W,H*p);}else{x.fillStyle=C.carbon;x.fillRect(0,0,W,H);}
   if(t<E.t0)return;
   const s1=spring(t-(E.t0+.05),PANEL),s2=spring(t-(E.t0+.25),PANEL),s3=spring(t-(E.t0+.2),PANEL),s4=spring(t-E.phoneAt,PANEL);
-  withT(540,470+(1-s1)*40,1,()=>{text('THE CAMPBELL-MARIC GROUP',0,0,{size:46,weight:800,fam:HEAD,color:C.white,ls:4});
-    x.fillStyle=C.brassL;x.fillRect(-120,30,240,5);},clamp(s1*1.3));
+  withT(540,450+(1-s1)*40,1,()=>{const lw=820,lh=lw*LOGO.naturalHeight/LOGO.naturalWidth;x.drawImage(LOGO,-lw/2,-lh/2,lw,lh);},clamp(s1*1.3));
   withT(540,(1-s2)*40,1,()=>{const ts=E.tagSize||80;runs([[E.tag[0],C.brassL]],0,680,{size:ts,weight:800,fam:HEAD});runs([[E.tag[1],C.white]],0,680+ts*1.2,{size:ts,weight:800,fam:HEAD});},clamp(s2*1.3));
   withT(540,960+(1-s3)*30,1,()=>{x.fillStyle=C.carbonSoft;x.strokeStyle=C.brassL;x.lineWidth=3;rr(-430,-70,860,140);x.fill();x.stroke();
     const url='yourhomeinottawa.ca',n=Math.floor(clamp((t-E.typeAt)/E.typeDur)*url.length),sub=url.slice(0,n);
@@ -84,4 +84,4 @@ function bg(){x.fillStyle=C.parch;x.fillRect(0,0,W,H);const g=x.createRadialGrad
   g.addColorStop(0,'rgba(255,253,248,.55)');g.addColorStop(.55,'rgba(241,239,232,0)');g.addColorStop(1,'rgba(214,206,188,.45)');x.fillStyle=g;x.fillRect(0,0,W,H);}
 function seek(t){x._t=t;bg();window.scenes(t);endCard(t);captions(t);}
 window.seek=seek;
-window.ready=Promise.all(['800 40px MR','600 40px MR','500 40px MR','700 40px MR','800 40px MS','600 40px MS'].map(f=>document.fonts.load(f))).then(()=>{seek(0);return true});
+window.ready=Promise.all([new Promise(r=>LOGO.complete?r():LOGO.onload=r)].concat(['800 40px MR','600 40px MR','500 40px MR','700 40px MR','800 40px MS','600 40px MS'].map(f=>document.fonts.load(f)))).then(()=>{seek(0);return true});
