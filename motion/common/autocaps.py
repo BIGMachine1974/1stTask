@@ -35,9 +35,14 @@ def read_caps(html):
 
 
 def transcribe(audio, model):
+    import subprocess, numpy as np
     from faster_whisper import WhisperModel
+    # decode with ffmpeg (already in the pipeline) rather than faster-whisper's PyAV, which breaks on some versions
+    pcm = subprocess.run(["ffmpeg", "-v", "error", "-i", str(audio), "-f", "s16le", "-ac", "1", "-ar", "16000", "-"],
+                         check=True, capture_output=True).stdout
+    samples = np.frombuffer(pcm, np.int16).astype(np.float32) / 32768.0
     wm = WhisperModel(model, device="cpu", compute_type="int8")
-    segs, _ = wm.transcribe(str(audio), word_timestamps=True, language="en")
+    segs, _ = wm.transcribe(samples, word_timestamps=True, language="en")
     return [dict(w=w.word.strip(), s=round(w.start, 2), e=round(w.end, 2)) for seg in segs for w in seg.words]
 
 
