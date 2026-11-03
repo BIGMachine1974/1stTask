@@ -109,7 +109,7 @@ def house(name, x, w, h, wall, roofc, doorc, t0, chimney=False):
     for dx in (-w * 0.28, w * 0.28):
         box(name + f"_win{dx:+.2f}", (x + dx, -0.41, h * 0.68), (w * 0.2, 0.06, w * 0.2), "brassL", t0 + 0.2, bevel=0.02, lumps=0.004)
     if chimney:
-        box(name + "_chim", (x + w * 0.25, 0, h + 0.38), (0.13, 0.13, 0.4), "brick", t0 + 0.28, bevel=0.02)
+        box(name + "_chim", (x + w * 0.25, 0, h + 0.38), (0.13, 0.13, 0.4), "brick", t0 + 0.28, bevel=0.02, kind="popbase")
 
 def tree(name, x, y, s, t0):
     bpy.ops.mesh.primitive_cylinder_add(radius=0.05 * s, depth=0.4 * s, location=(x, y, 0.2 * s))
@@ -203,6 +203,9 @@ def pose(t, p):
         if kind == "pop":     # grows from its base like a lump being pushed up
             base = Vector((loc.x, loc.y, 0)); o.scale = scl * max(s, 0.001)
             o.location = base + (loc - base) * s
+        elif kind == "popbase":  # grows up out of its own base (chimneys out of the roof)
+            zmin = min(v.co.z for v in o.data.vertices)
+            o.scale = scl * max(s, 0.001); o.location.z = loc.z + zmin * (1 - s)
         elif kind == "slide":  # slides in from below the table edge
             o.location.z = loc.z - (1 - s) * 2.5
         elif kind in ("drop", "hop"):
