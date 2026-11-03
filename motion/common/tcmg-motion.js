@@ -27,11 +27,11 @@ function runs(parts,X,Y,o){x.save();x.font=`${o.weight} ${o.size}px ${o.fam}`;x.
   const tw=parts.reduce((a,[s])=>a+x.measureText(s).width,0);let cx=X-tw/2;
   for(const[s,c]of parts){x.globalAlpha=o.alpha??1;x.fillStyle=c;x.textAlign='left';x.fillText(s,cx,Y);cx+=x.measureText(s).width;}x.restore();}
 function withT(tx,ty,sc,fn,alpha=1,rot=0){if(alpha<=0.001)return;x.save();x.globalAlpha*=alpha;x.translate(tx,ty);x.rotate(rot);x.scale(sc,sc);fn();x.restore();}
-// matches the TCMG reels: one line of fine print, left-aligned, just above the caption bar
+// matches the TCMG reels: one line of fine print just above the caption bar (left-aligned, or centred with window.CAP_CENTER)
 const LX=84;
 function finePrint(lines,a,dark=false){const s=lines.join('  ·  ');let size=22;x.save();x.letterSpacing='0px';x.font=`600 ${size}px ${BODY}`;
   while(x.measureText(s).width>W-2*LX&&size>16){size--;x.font=`600 ${size}px ${BODY}`;}x.restore();
-  text(s,LX,1392,{size,weight:600,color:dark?'#9a9a8f':C.mute,align:'left',alpha:a});}
+  const c=window.CAP_CENTER;text(s,c?W/2:LX,1392,{size,weight:600,color:dark?'#9a9a8f':C.mute,align:c?'center':'left',alpha:a});}
 // "*word*" marks the accent word; returns [[text,color],...]
 function accent(s,base=C.ink,acc=C.brassD){return s.split('*').map((p,i)=>[p,i%2?acc:base]).filter(([p])=>p);}
 function runsL(parts,X,Y,o){x.save();x.font=`${o.weight} ${o.size}px ${o.fam}`;x.letterSpacing=(o.ls||0)+'px';let cx=X;
@@ -62,8 +62,9 @@ function captions(t){for(const[a,b,s,,dark]of window.CAPS){const al=fadeWin(t,a,
   if(dark){const y=1508-h/2+(1-spring(t-a,SNAP))*12;x.save();x.globalAlpha=al;x.fillStyle=C.carbonSoft;x.strokeStyle='#33372f';x.lineWidth=2;rr(540-(tw+64)/2,y,tw+64,h);x.fill();x.stroke();x.restore();
     lines.forEach((p,i)=>runs(p,540,y+(lines.length>1?55+i*48:55),{size:38,weight:700,fam:BODY,alpha:al}));continue;}
   const bw=tw+56,y=1440+(1-spring(t-a,SNAP))*12;
-  x.save();x.globalAlpha=al;x.fillStyle=C.ink;rr(LX-24,y,bw,h);x.fill();x.restore();
-  lines.forEach((p,i)=>runsL(p,LX+4,y+(lines.length>1?55+i*48:55),{size:38,weight:700,fam:BODY,alpha:al}));}}
+  const c=window.CAP_CENTER; // centred bar and lines when the page sets window.CAP_CENTER, else left-aligned at LX
+  x.save();x.globalAlpha=al;x.fillStyle=C.ink;rr(c?W/2-bw/2:LX-24,y,bw,h);x.fill();x.restore();
+  lines.forEach((p,i)=>{const ly=y+(lines.length>1?55+i*48:55),o={size:38,weight:700,fam:BODY,alpha:al};c?runs(p,W/2,ly,o):runsL(p,LX+4,ly,o);});}}
 
 // ---------- end card on carbon: matches the current TCMG reels ----------
 const PHONE='613-799-9022';
