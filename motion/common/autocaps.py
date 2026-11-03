@@ -21,9 +21,15 @@ LEAD, GAP, MODEL = 0.05, 0.15, "small.en"
 CAP_RE = re.compile(r"""\[\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*(['"])(.*?)(?<!\\)\3([^\]]*)\]""")
 
 
+NUMS = {w: str(i) for i, w in enumerate("zero one two three four five six seven eight nine ten eleven twelve thirteen "
+                                         "fourteen fifteen sixteen seventeen eighteen nineteen".split())}
+NUMS.update({w: str(10 * i) for i, w in enumerate("_ _ twenty thirty forty fifty sixty seventy eighty ninety".split()) if i > 1})
+
+
 def norm(s):
-    """'$623,500.' -> '623500', "Board's" -> 'boards', '*actually' -> 'actually'."""
-    return re.sub(r"[^a-z0-9]", "", s.lower())
+    """'$623,500.' -> '623500', "Board's" -> 'boards', '*actually' -> 'actually', 'Twenty' -> '20'."""
+    s = re.sub(r"[^a-z0-9]", "", s.lower())
+    return NUMS.get(s, s)
 
 
 def read_caps(html):
@@ -43,10 +49,30 @@ def transcribe(audio, model):
     samples = np.frombuffer(pcm, np.int16).astype(np.float32) / 32768.0
     wm = WhisperModel(model, device="cpu", compute_type="int8")
     segs, _ = wm.transcribe(samples, word_timestamps=True, language="en")
-    return [dict(w=w.word.strip(), s=round(w.start, 2), e=round(w.end, 2)) for seg in segs for w in seg.words]
+    return [dict(w=w.word.strip(), s=round(w.start, 2), e=round(w.end, 2)) for seg in segs for w in seg.words], samples
 
 
-def align(caps, words):
+def onset(samples, prev_end, word, nxt):
+    """Where speech really starts for a line's first word.
+
+    Whisper often stretches a word back over the pause before it (or gives it zero length), so walk back
+    from a point inside the word through the audio until there are 150 ms of near-silence, never past the
+    previous line's last word."""
+    import numpy as np
+    hop = 160  # 10 ms at 16 kHz
+    rms = np.sqrt(np.convolve(samples ** 2, np.ones(hop) / hop, mode="same")[::hop])
+    thr = 0.12 * np.percentile(rms, 95)
+    ref = max(word["e"], min(word["s"] + 0.15, nxt["e"] if nxt else word["e"]))
+    i, quiet, floor = int(ref * 100), 0, int(prev_end * 100)
+    while i > floor:
+        quiet = quiet + 1 if rms[i] < thr else 0
+        if quiet >= 15:
+            return round((i + quiet) / 100, 2)
+        i -= 1
+    return round(max(prev_end, 0.0), 2)
+
+
+def align(caps, words, samples=None):
     """Map every caption line onto the spoken words and return (start, end-of-speech) per line."""
     script = [(i, norm(tok)) for i, c in enumerate(caps) for tok in re.split(r"[\s|]+", c["text"]) if norm(tok)]
     spoken = [norm(w["w"]) for w in words]
@@ -55,10 +81,15 @@ def align(caps, words):
     for blk in sm.get_matching_blocks():
         for k in range(blk.size):
             hit.setdefault(script[blk.a + k][0], []).append(blk.b + k)
-    times = []
+    times, last_end = [], 0.0
     for i in range(len(caps)):
         if i in hit:
-            times.append((words[min(hit[i])]["s"], words[max(hit[i])]["e"]))
+            a, b = min(hit[i]), max(hit[i])
+            start = words[a]["s"]
+            if samples is not None:
+                start = onset(samples, last_end, words[a], words[a + 1] if a + 1 < len(words) else None)
+            times.append((start, words[b]["e"]))
+            last_end = words[b]["e"]
         else:
             times.append(None)  # no word matched (e.g. a line that is shown but not spoken)
     return times
@@ -90,9 +121,9 @@ def main():
     d = Path(a.video_dir)
     html = (d / "index.html").read_text()
     caps, m = read_caps(html)
-    words = transcribe(d / "vo.mp3", a.model)
+    words, samples = transcribe(d / "vo.mp3", a.model)
     (d / "words.json").write_text(json.dumps(words, indent=1))
-    times = align(caps, words)
+    times = align(caps, words, samples)
     new = build(caps, times)
 
     print(f"{'line':<44} {'hand start':>10} {'auto start':>10} {'diff':>6}")
