@@ -8,7 +8,7 @@ canvas{display:block}
 </style></head>
 <body><canvas id="c" width="1080" height="1920"></canvas>
 <script>
-// Paper Ottawa: series intro (TCMG, cut-paper style). Music only, on-screen text. Animated on twos.
+// Neighbourhood by Neighbourhood: series intro (TCMG, cut-paper style). Animated on twos.
 // Contract with render.js: window.ready (promise), window.DUR (s), window.seek(t) draws the frame at t.
 const W=1080,H=1920,cv=document.getElementById('c'),x=cv.getContext('2d');
 const C={carbon:'#121411',ink:'#171915',parch:'#f1efe8',paper:'#e7e3d8',white:'#fffdf8',
@@ -96,8 +96,9 @@ function title(t,t0){ground(C.parch);
   pop(t,t0+0.05,()=>piece([[90,620],[990,560],[1010,1330],[70,1380]],C.mossL,100,{amp:6}),{bx:540,by:960});
   pop(t,t0+0.15,()=>piece([[120,660],[960,640],[980,1290],[100,1310]],C.white,101,{amp:5}),{bx:540,by:960});
   chip(t,t0+0.35,'A NEW SERIES',760,{id:102,fill:C.brass,col:C.ink});
-  pop(t,t0+0.5,()=>runs([['PAPER',C.ink]],540,960,'800 190px MS',6),{bx:540,by:900});
-  pop(t,t0+0.68,()=>runs([['OTTAWA',C.brassD]],540,1150,'800 170px MS',6),{bx:540,by:1090});
+  pop(t,t0+0.5,()=>runs([['Neighbourhood',C.ink]],540,935,'800 100px MS'),{bx:540,by:900});
+  pop(t,t0+0.62,()=>runs([['by',C.brass]],540,1020,'800 64px MS'),{bx:540,by:1000});
+  pop(t,t0+0.74,()=>runs([['Neighbourhood',C.brassD]],540,1135,'800 100px MS'),{bx:540,by:1100});
   pop(t,t0+0.9,()=>piece([[260,1195],[820,1185],[815,1215],[262,1222]],C.brass,103,{amp:3}),{bx:540,by:1205});
   pop(t,t0+1.1,()=>house(540,1630,170,150,C.brassL,C.carbon,C.brick,110,{chimney:true}),{bx:540,by:1630});
   pop(t,t0+1.0,()=>{piece(rect(-40,1620,1160,320),C.moss,115,{amp:5});},{bx:540,by:H,from:'slide'});}
@@ -128,7 +129,7 @@ function orleans(t,t0){ground(C.paper);
     piece(rect(-40,1340,1160,600),C.river,351,{amp:6});
     for(let row=0;row<4;row++)for(let i=0;i<5;i++){const off=((t*40+row*70)%220);
       piece(rect(-120+i*260+off,1430+row*110,140,16),C.riverL,360+row*10+i,{amp:2,shadow:false});}},{bx:540,by:H,from:'slide'});
-  chip(t,t0+0.3,'PAPER OTTAWA  ·  EPISODE 1',300,{id:370});
+  chip(t,t0+0.3,'EPISODE 1',300,{id:370});
   strip(t,t0+0.5,['First stop:','*Orléans.*'],470,{size:84,id:371});}
 
 function endcard(t,t0){ground(C.carbon);
@@ -136,7 +137,8 @@ function endcard(t,t0){ground(C.carbon);
   pop(t,t0+0.6,()=>runs([['yourhomeinottawa.ca',C.brassL]],540,1010,'700 52px MR'),{bx:540,by:995});
   pop(t,t0+0.75,()=>runs([['613-799-9022',C.parch]],540,1085,'600 40px MR'),{bx:540,by:1070});
   pop(t,t0+0.5,()=>{piece(rect(330,640,420,10),C.brass,400,{amp:2,shadow:false});piece(rect(330,1150,420,10),C.brass,401,{amp:2,shadow:false});},{bx:540,by:900});
-  pop(t,t0+0.9,()=>runs([['Paper Ottawa. New episodes soon.',C.parch]],540,1290,'800 50px MS'),{bx:540,by:1275});
+  pop(t,t0+0.9,()=>runs([['Neighbourhood by Neighbourhood',C.parch]],540,1290,'800 52px MS'),{bx:540,by:1275});
+  pop(t,t0+1.0,()=>runs([['New episodes soon.',C.brassL]],540,1360,'700 38px MR'),{bx:540,by:1350});
   pop(t,t0+1.0,()=>runs([['The Campbell-Maric Group · eXp Realty, Brokerage',C.mute]],540,1760,'600 26px MR'),{bx:540,by:1750});}
 
 const LOGO=new Image();LOGO.src='../common/lockup-light.png';
