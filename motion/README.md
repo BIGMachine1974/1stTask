@@ -34,7 +34,9 @@ Every video is one `index.html` that draws each frame on a 1080×1920 canvas, ca
 The default explainer look. Examples: the TCMG cost, commute and schools videos.
 
 ### Cut paper
-Reference scene: `motion/tcmg-paper-test/`.
+- **Kit:** `motion/common/paper-kit.js`. It provides torn pieces, springs, strips, chips, pins, price tags, houses and trees, captions, fine print and wipes. A page sets `window.scenes(t)`, `window.CAPS`, `window.WIPES` and `window.DUR`, then calls `paperReady()`.
+- **Full example:** `motion/tcmg-neighbourhood-orleans/` (Neighbourhood by Neighbourhood, Episode 1). Its scenes are timed to the voice words: the voice sits in `vo.mp3`, offset 0.4 s, and captions come from `autocaps.py`.
+- **First test:** `motion/tcmg-paper-test/`.
 - Torn edges, drop shadows and paper grain.
 - Animated **on twos** (12 poses a second), with edges re-tearing on every pose.
 - Renders in about a minute.

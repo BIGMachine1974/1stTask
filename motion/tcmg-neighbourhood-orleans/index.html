@@ -1,0 +1,169 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:"MR";font-weight:400 800;src:url("assets/Manrope.woff2") format("woff2")}
+@font-face{font-family:"MS";font-weight:800;src:url("assets/Mansfield-Extra-Bold.ttf")}
+html,body{margin:0;background:#e7e3d8}
+canvas{display:block}
+</style></head>
+<body><canvas id="c" width="1080" height="1920"></canvas>
+<script src="../common/paper-kit.js"></script>
+<script>
+// Neighbourhood by Neighbourhood, Episode 1: Orléans (TCMG, cut paper). Voice: Greg, mellow take 1, starting at VO_AT.
+// Scene timings follow the words in vo-takes/vo-orleans-take1.words.json; captions are timed by autocaps.py from vo.mp3.
+const VO_AT=0.4, at=v=>v+VO_AT;
+window.DUR=48.6;
+const B=[0,4.9,11.6,16.5,25.7,30.7,36.3,40.8,44.3,48.6]; // scene boundaries
+const WC=[C.brass,C.moss,C.parch,C.slate,C.brassL,C.moss,C.parch,C.carbon];
+window.WIPES=B.slice(1,-1).map((b,i)=>({t:b-.35,c:WC[i]}));
+window.CAPS=[[5.22,7.8,"Ottawa's east end, right along the river."],
+[7.95,11.58,'About *120,000 people*,|almost a city of its own.'],
+[11.73,16.36,"It's bilingual at heart, with schools|on *all four boards*, French and English."],
+[16.51,17.53,'Pick your pocket.'],
+[17.68,19.84,'*Chapel Hill* and *Avalon* for newer homes.'],
+[19.99,21.57,'*Fallingbrook* for mature trees.'],
+[21.72,23.25,'*Convent Glen* for a mix.'],
+[23.4,25.3,'*Queenswood Heights* for bigger lots.'],
+[25.45,26.84,'Weekends? The *river trails*,'],
+[26.99,30.54,'*Millennium Sports Park*, and a|50-metre pool at *Ray Friel*.'],
+[30.69,33.35,"Downtown's about *25 minutes* on the 174,"],
+[33.5,36.12,"and the O-Train's east extension|is in *final testing*."],
+[36.27,38.59,'Detached homes average around *$760K*.'],
+[38.74,40.7,'Townhomes, around *$570K*.']];
+const BROKER='The Campbell-Maric Group · eXp Realty, Brokerage';
+const LOGO=new Image();LOGO.src='../common/lockup-light.png';
+
+// ---------- scenes ----------
+function opener(t){ground(C.parch);
+  pop(t,0.15,()=>{piece(rect(-40,1180,1160,210),C.mossL,10,{amp:5});piece(rect(-40,1370,1160,70),C.white,11,{amp:4});
+    piece(rect(-40,1430,1160,520),C.slate,12,{amp:5});for(let i=0;i<6;i++)piece(rect(30+i*190,1540,110,22),C.brassL,13+i,{amp:2,shadow:false});},{by:H,from:'slide'});
+  pop(t,0.45,()=>house(230,1200,230,220,C.parch,C.slate,C.moss,20,{chimney:true}),{bx:230,by:1200});
+  pop(t,0.65,()=>house(540,1210,260,290,C.brassL,C.carbon,C.brick,30),{bx:540,by:1210});
+  pop(t,0.85,()=>house(850,1200,220,200,C.white,C.brick,C.slate,40),{bx:850,by:1200});
+  chip(t,0.3,'NEIGHBOURHOOD BY NEIGHBOURHOOD',330,{id:50});
+  strip(t,at(2.44),['Episode 1'],500,{size:64,id:51});
+  pop(t,at(3.96),()=>{piece(rect(150,600,780,230),C.white,52,{amp:4});runs([['Orléans',C.brassD]],540,770,'800 150px MS');},{bx:540,by:715});}
+
+function eastEnd(t,t0){ground(C.paper);
+  pop(t,t0+.05,()=>piece([[40,560],[1040,470],[1050,1440],[30,1480]],C.mossL,100,{amp:7}),{by:1000});
+  pop(t,t0+.2,()=>{piece([[-40,520],[300,610],[640,560],[1120,470],[1120,600],[640,690],[300,740],[-40,660]],C.river,101,{amp:6});
+    piece([[-40,575],[300,665],[640,615],[1120,525],[1120,545],[640,640],[300,690],[-40,600]],C.riverL,102,{amp:3,shadow:false});},{by:600,from:'drop'});
+  pop(t,t0+.4,()=>{x.save();x.font='700 26px MR';x.fillStyle=C.mute;x.textAlign='center';x.letterSpacing='5px';x.fillText('OTTAWA RIVER',330,610);x.restore();},{bx:330,by:600});
+  pop(t,t0+.5,()=>pin(250,880,'Downtown',110,{side:1}),{bx:250,by:880,from:'drop'});
+  // the east end lights up in brass as it's named
+  pop(t,at(5.32),()=>piece([[600,700],[1000,620],[1010,1300],[590,1340]],C.brassL,120,{amp:6,alpha:.75}),{bx:800,by:980});
+  pop(t,at(6.16),()=>pin(800,980,'Orléans',130,{hot:true,side:-1}),{bx:800,by:980,from:'drop'});
+  pop(t,at(7.76),()=>priceTag(540,1250,'POPULATION','~120,000','almost a city of its own',140,{hi:true}),{bx:540,by:1250});
+  strip(t,at(9.68),['Almost a city','of its *own.*'],290,{size:66,id:150});
+  finePrint('Source: TCMG Orléans neighbourhood guide, 2026 · Map not to scale · '+BROKER,clamp((t-t0-.4)/.3));}
+
+function bubble(cx,cy,w,h,fill,tail,id){piece([[cx-w/2,cy-h/2],[cx+w/2,cy-h/2],[cx+w/2,cy+h/2],[cx+tail*w*.15,cy+h/2],[cx+tail*w*.3,cy+h/2+60],[cx-tail*w*.05,cy+h/2],[cx-w/2,cy+h/2]],fill,id,{amp:3});}
+function bilingual(t,t0){ground(C.parch);
+  pop(t,at(11.54),()=>{bubble(330,430,440,170,C.white,1,200);runs([['Bonjour!',C.ink]],330,460,'800 82px MS');},{bx:330,by:430});
+  pop(t,at(11.84),()=>{bubble(750,640,400,170,C.brass,-1,201);runs([['Hello!',C.ink]],750,670,'800 82px MS');},{bx:750,by:640});
+  chip(t,at(13.3),'ALL FOUR SCHOOL BOARDS',860,{id:202});
+  const S=[['OCDSB','English public'],['OCSB','English Catholic'],['CEPEO','French public'],['CECCE','French Catholic']];
+  S.forEach(([n,d],i)=>{const cx=i%2?775:305,cy=i<2?1060:1330;
+    pop(t,at(12.76)+i*.22,()=>{piece(rect(cx-215,cy-110,430,220),i<2?C.white:C.brassL,210+i,{amp:3});
+      runs([[n,C.ink]],cx,cy+5,'800 74px MS');runs([[d,i<2?C.mute:C.brassD]],cx,cy+60,'700 28px MR');},{bx:cx,by:cy});});
+  finePrint('Source: TCMG Orléans neighbourhood guide, 2026 · '+BROKER,clamp((t-t0-.4)/.3));}
+
+function pockets(t,t0){ground(C.paper);
+  strip(t,at(16.18),['Pick your *pocket.*'],270,{size:70,id:300});
+  pop(t,t0+.05,()=>{piece([[60,520],[1020,470],[1030,1450],[50,1470]],C.mossL,301,{amp:7});
+    piece([[-40,430],[1120,380],[1120,500],[-40,560]],C.river,302,{amp:6});},{by:1000});
+  // roads, so the map reads as streets
+  pop(t,t0+.25,()=>{piece([[60,1000],[1030,960],[1030,980],[60,1022]],C.paper,303,{amp:2,shadow:false});
+    piece([[540,500],[560,500],[600,1460],[578,1460]],C.paper,304,{amp:2,shadow:false});},{by:1000});
+  const P=[[at(17.24),560,1240,'Chapel Hill · Avalon','newer homes',1,()=>house(470,1395,120,110,C.brassL,C.carbon,C.brick,320)],
+           [at(19.86),860,760,'Fallingbrook','mature trees',-1,()=>{tree(900,900,.45,330);tree(965,900,.38,333);}],
+           [at(21.5),230,700,'Convent Glen','a mix',1,()=>{house(160,860,90,80,C.parch,C.slate,C.moss,340);house(255,860,90,100,C.white,C.brick,C.slate,350);}],
+           [at(23.1),400,1010,'Queenswood Heights','bigger lots',1,()=>{piece(rect(250,1110,240,50),C.moss,360,{amp:3});house(330,1120,100,85,C.white,C.slate,C.moss,361);}]];
+  P.forEach(([t1,px,py,l,sub,side,icon],i)=>{pop(t,t1+.2,icon,{bx:px,by:py+100});pop(t,t1,()=>pin(px,py,l,370+i*10,{side,sub}),{bx:px,by:py,from:'drop'});});
+  finePrint('Source: TCMG Orléans neighbourhood guide, 2026 · Map not to scale · '+BROKER,clamp((t-t0-.4)/.3));}
+
+function weekends(t,t0){ground(C.parch);
+  strip(t,at(25.4),['*Weekends?*'],250,{size:74,id:400});
+  const lab=(s,cy)=>{x.save();piece(rect(140,cy-140,textW([[s,C.parch]],'700 26px MR',4)+50,52),C.carbon,410+cy,{amp:2});
+    runs([[s,C.parch]],140+(textW([[s,C.parch]],'700 26px MR',4)+50)/2,cy-105,'700 26px MR',4);x.restore();};
+  // river trails: a cyclist rolling along the path by the water
+  pop(t,at(26.04),()=>{piece(rect(110,410,860,300),C.white,420,{amp:3});
+    x.save();x.beginPath();x.rect(125,425,830,270);x.clip();
+    piece(rect(110,600,860,110),C.river,421,{amp:3,shadow:false});piece(rect(110,560,860,40),C.sand,422,{amp:2,shadow:false});
+    const cxp=180+((t-at(26.04))*120)%700;
+    piece(circle(cxp,575,22,14),C.ink,423,{amp:1,shadow:false});piece(circle(cxp+70,575,22,14),C.ink,424,{amp:1,shadow:false});
+    piece([[cxp,570],[cxp+35,530],[cxp+70,570],[cxp+40,575]],C.brick,425,{amp:1,shadow:false});
+    piece(circle(cxp+38,490,14,12),C.brassD,426,{amp:1,shadow:false});
+    tree(800,560,.4,427);x.restore();lab('RIVER TRAILS',560);},{bx:540,by:560});
+  // Millennium Sports Park: a field with a ball rolling
+  pop(t,at(27.2),()=>{piece(rect(110,750,860,300),C.moss,430,{amp:3});
+    piece(rect(140,880,800,6),C.white,431,{amp:1,shadow:false});piece(circle(540,900,70,22).map(([a,b])=>[a,b]),C.mossL,432,{amp:2,shadow:false});
+    piece(rect(150,850,10,100),C.white,433,{amp:1,shadow:false});piece(rect(920,850,10,100),C.white,434,{amp:1,shadow:false});
+    const bx=300+Math.sin((t-at(27.2))*2)*220;piece(circle(bx,960,18,14),C.white,435,{amp:1});lab('MILLENNIUM SPORTS PARK',900);},{bx:540,by:900});
+  // Ray Friel: a 50-metre pool with lanes and moving water
+  pop(t,at(28.94),()=>{piece(rect(110,1090,860,300),C.river,440,{amp:3});
+    for(let l=0;l<3;l++){const y=1180+l*70;piece(rect(140,y,800,6),C.white,441+l,{amp:1,shadow:false});
+      for(let i=0;i<4;i++){const off=((t*50+l*60)%200);piece(rect(150+i*210+off-100,y+25,110,12),C.riverL,450+l*10+i,{amp:2,shadow:false});}}
+    lab('RAY FRIEL · 50 M POOL',1240);},{bx:540,by:1240});
+  finePrint('Source: TCMG Orléans neighbourhood guide, 2026 · '+BROKER,clamp((t-t0-.4)/.3));}
+
+function commute(t,t0){ground(C.paper);
+  // the skyline downtown on the left
+  pop(t,t0+.1,()=>{[[80,120,300],[190,90,380],[270,110,250]].forEach(([xx,w,h],i)=>{piece(rect(xx,840-h,w,h),i==1?C.slate:C.mute,500+i,{amp:2});
+    for(let r=0;r<5;r++)piece(rect(xx+18,860-h+r*45,w-36,14),C.brassL,510+i*10+r,{amp:1,shadow:false,alpha:.8});});},{bx:200,by:840,from:'slide'});
+  pop(t,t0+.2,()=>{piece(rect(-40,840,1160,150),C.slate,520,{amp:4});
+    for(let i=0;i<7;i++){const off=((t*160)%180);piece(rect(-60+i*180-off+180,905,90,14),C.brassL,521+i,{amp:2,shadow:false});}},{by:900,from:'slide'});
+  pop(t,at(30.84),()=>{piece(rect(720,560,190,150),C.white,530,{amp:3});runs([['174',C.ink]],815,660,'800 84px MS');
+    runs([['HWY',C.brassD]],815,595,'700 24px MR',4);},{bx:815,by:635});
+  // a car driving west toward downtown
+  const cx=1000-clamp((t-at(30.4))/4)*560;
+  pop(t,at(30.4),()=>{piece(rect(cx-80,860,160,60),C.brick,540,{amp:2});piece(rect(cx-45,825,95,45),C.brick,541,{amp:2});
+    piece(rect(cx-35,833,35,28),C.riverL,542,{amp:1,shadow:false});piece(rect(cx+5,833,35,28),C.riverL,543,{amp:1,shadow:false});
+    piece(circle(cx-45,925,18,12),C.ink,544,{amp:1});piece(circle(cx+45,925,18,12),C.ink,545,{amp:1});},{bx:cx,by:900});
+  strip(t,at(31.02),['About *25 minutes*','to downtown'],320,{size:62,id:550});
+  // the O-Train arriving on its track, tagged as in testing
+  pop(t,t0+.4,()=>{piece(rect(-40,1230,1160,14),C.ink,560,{amp:1,grain:false});piece(rect(-40,1262,1160,14),C.ink,561,{amp:1,grain:false});
+    for(let i=0;i<14;i++)piece(rect(i*80,1222,16,64),C.brassD,562+i,{amp:1,shadow:false});},{by:1250,from:'slide'});
+  const tx=at(33.32),tr=1300-ease(clamp((t-tx)/1.6))*900;
+  if(t>=tx){piece([[tr,1080],[tr+640,1080],[tr+700,1140],[tr+700,1225],[tr,1225]],C.white,580,{amp:3});
+    piece(rect(tr,1170,700,22),C.brick,581,{amp:2,shadow:false});
+    for(let w=0;w<5;w++)piece(rect(tr+40+w*120,1100,80,52),C.slate,582+w,{amp:1.5,shadow:false});
+    runs([['O-TRAIN',C.brick]],tr+330,1215,'800 22px MR',3);}
+  chip(t,at(34.8),'EAST EXTENSION · IN FINAL TESTING',1380,{id:590,fill:C.brass,col:C.ink});
+  finePrint('Drive time varies with traffic · O-Train status as of Nov 2026 · '+BROKER,clamp((t-t0-.4)/.3));}
+
+function prices(t,t0){ground(C.parch);
+  chip(t,t0+.2,'ORLÉANS · NOV 2026',330,{id:600});
+  pop(t,at(35.98),()=>priceTag(540,660,'DETACHED · AVERAGE','$760,609','Median $750,000',610),{bx:540,by:660});
+  pop(t,at(38.44),()=>priceTag(540,1010,'TOWNHOMES · AVERAGE','$569,150','Median $590,000',620,{hi:true}),{bx:540,by:1010});
+  pop(t,t0+.4,()=>{house(300,1400,170,150,C.parch,C.slate,C.moss,630,{chimney:true});
+    [0,1,2].forEach(i=>house(640+i*120,1400,120,130,[C.white,C.brassL,C.white][i],C.brick,C.slate,640+i*10));},{by:1400,from:'slide'});
+  finePrint('Source: TCMG market data, Nov 2026 · Prices vary by street and property · '+BROKER,clamp((t-t0-.4)/.3));}
+
+function close(t,t0){ground(C.paper);
+  pop(t,t0+.25,()=>piece(circle(820,760,95),C.brass,700,{amp:4}),{bx:820,by:1000,from:'slide'});
+  pop(t,t0+.05,()=>hill(1000,C.mossL,701),{by:H,from:'slide'});
+  pop(t,t0+.4,()=>house(250,1050,210,190,C.parch,C.slate,C.moss,710,{chimney:true}),{bx:250,by:1050});
+  pop(t,t0+.55,()=>house(520,1040,240,250,C.brassL,C.carbon,C.brick,720),{bx:520,by:1040});
+  pop(t,t0+.7,()=>house(800,1050,200,180,C.white,C.brick,C.slate,730),{bx:800,by:1050});
+  pop(t,t0+.85,()=>tree(980,1080,.7,740),{bx:980,by:1080});
+  pop(t,t0+.15,()=>{piece(rect(-40,1180,1160,180),C.sand,750,{amp:5});piece(rect(-40,1340,1160,600),C.river,751,{amp:6});
+    for(let row=0;row<4;row++)for(let i=0;i<5;i++){const off=((t*40+row*70)%220);
+      piece(rect(-120+i*260+off,1430+row*110,140,16),C.riverL,760+row*10+i,{amp:2,shadow:false});}},{by:H,from:'slide'});
+  strip(t,at(40.5),['*Orléans.*'],300,{size:110,id:780});
+  strip(t,at(41.4),['Room to grow,','close to the river.'],520,{size:58,id:781});}
+
+function endcard(t,t0){ground(C.carbon);
+  pop(t,t0+.3,()=>{const w=860,h=w*184/1536;x.drawImage(LOGO,540-w/2,700-h/2,w,h);},{bx:540,by:700});
+  pop(t,t0+.5,()=>{piece(rect(330,540,420,10),C.brass,800,{amp:2,shadow:false});piece(rect(330,1060,420,10),C.brass,801,{amp:2,shadow:false});},{bx:540,by:800});
+  pop(t,t0+.55,()=>runs([['The full Orléans guide',C.parch]],540,880,'800 56px MS'),{bx:540,by:860});
+  pop(t,t0+.7,()=>runs([['yourhomeinottawa.ca',C.brassL]],540,960,'700 52px MR'),{bx:540,by:945});
+  pop(t,t0+.85,()=>runs([['613-799-9022',C.parch]],540,1025,'600 40px MR'),{bx:540,by:1010});
+  pop(t,t0+1.1,()=>runs([['Neighbourhood by Neighbourhood',C.parch]],540,1200,'800 48px MS'),{bx:540,by:1185});
+  pop(t,t0+1.25,()=>runs([['Next episode soon.',C.brassL]],540,1265,'700 36px MR'),{bx:540,by:1255});
+  pop(t,t0+1.3,()=>runs([[BROKER,C.mute]],540,1760,'600 26px MR'),{bx:540,by:1750});}
+
+const SC=[opener,eastEnd,bilingual,pockets,weekends,commute,prices,close,endcard];
+window.scenes=t=>{let i=SC.length-1;while(i>0&&t<B[i])i--;SC[i](t,B[i]);};
+paperReady([imageReady(LOGO)]);
+</script></body></html>
