@@ -1,0 +1,153 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:"MR";font-weight:400 800;src:url("assets/Manrope.woff2") format("woff2")}
+@font-face{font-family:"MS";font-weight:800;src:url("assets/Mansfield-Extra-Bold.ttf")}
+html,body{margin:0;background:#e7e3d8}
+canvas{display:block}
+</style></head>
+<body><canvas id="c" width="1080" height="1920"></canvas>
+<script>
+// Paper Ottawa: series intro (TCMG, cut-paper style). Music only, on-screen text. Animated on twos.
+// Contract with render.js: window.ready (promise), window.DUR (s), window.seek(t) draws the frame at t.
+const W=1080,H=1920,cv=document.getElementById('c'),x=cv.getContext('2d');
+const C={carbon:'#121411',ink:'#171915',parch:'#f1efe8',paper:'#e7e3d8',white:'#fffdf8',
+  brass:'#c2a56a',brassL:'#d8c08f',brassD:'#725b2f',moss:'#59644d',mossL:'#7d8770',mute:'#5a5b54',
+  brick:'#a8664a',slate:'#4d5560',river:'#7b8e9a',riverL:'#a4b4bd',sand:'#e4d3a8'};
+window.DUR=21.0;
+// scene changes happen under a torn-paper wipe; each wipe covers the frame at its midpoint
+const WIPES=[{t:3.4,c:C.brass},{t:7.4,c:C.moss},{t:14.2,c:C.parch},{t:17.4,c:C.carbon}];
+window.WIPE_TIMES=WIPES.map(w=>w.t+0.4);
+
+// ---------- paper kit ----------
+function rng(seed){let s=seed>>>0||1;return()=>((s=Math.imul(s^s>>>15,s|1),s^=s+Math.imul(s^s>>>7,s|61),((s^s>>>14)>>>0)/4294967296));}
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const ease=p=>{p=clamp(p);return p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;};
+function spring(dt,w=15,z=.42){if(dt<=0)return 0;const wd=w*Math.sqrt(1-z*z);return 1-Math.exp(-z*w*dt)*(Math.cos(wd*dt)+z*w/wd*Math.sin(wd*dt));}
+function torn(pts,seed,amp=3,step=14){const r=rng(seed),out=[];
+  for(let i=0;i<pts.length;i++){const[a,b]=[pts[i],pts[(i+1)%pts.length]];const L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(1,Math.round(L/step));
+    const nx=-(b[1]-a[1])/L,ny=(b[0]-a[0])/L;
+    for(let k=0;k<n;k++){const p=k/n,j=(r()-.5)*2*amp;out.push([a[0]+(b[0]-a[0])*p+nx*j,a[1]+(b[1]-a[1])*p+ny*j]);}}
+  return out;}
+let BOIL=0;
+function piece(pts,fill,id,{amp=3,shadow=true,grain=true}={}){const p=torn(pts,id*977+BOIL*13,amp);
+  x.save();x.beginPath();p.forEach(([a,b],i)=>i?x.lineTo(a,b):x.moveTo(a,b));x.closePath();
+  if(shadow){x.shadowColor='rgba(23,25,21,.28)';x.shadowBlur=14;x.shadowOffsetX=5;x.shadowOffsetY=8;}
+  x.fillStyle=fill;x.fill();x.shadowColor='transparent';
+  if(grain){x.clip();x.globalAlpha=.10;x.drawImage(GRAIN,0,0);}x.restore();}
+const rect=(X,Y,w,h)=>[[X,Y],[X+w,Y],[X+w,Y+h],[X,Y+h]];
+const circle=(cx,cy,r,n=26)=>Array.from({length:n},(_,i)=>[cx+r*Math.cos(i/n*6.283),cy+r*Math.sin(i/n*6.283)]);
+const GRAIN=document.createElement('canvas');GRAIN.width=W;GRAIN.height=H;
+{const g=GRAIN.getContext('2d'),r=rng(7);for(let i=0;i<26000;i++){g.fillStyle=r()<.5?'#000':'#fff';g.globalAlpha=r()*.6;
+  g.fillRect(r()*W,r()*H,1+r()*2.5,1+r()*1.2);}}
+function pop(t,t0,draw,{bx,by,from='scale'}={}){const p=spring(t-t0);if(p<=0)return;
+  x.save();x.translate(bx,by);if(from==='scale')x.scale(p,p);else x.translate(0,(1-p)*(from==='drop'?-700:900));x.translate(-bx,-by);draw();x.restore();}
+function ground(c){x.fillStyle=c;x.fillRect(0,0,W,H);x.globalAlpha=.07;x.drawImage(GRAIN,0,0);x.globalAlpha=1;}
+
+// text: runs of [string, colour], measured so the line can be centred
+function textW(parts,font,ls=0){x.save();x.font=font;x.letterSpacing=ls+'px';const w=parts.reduce((a,[s])=>a+x.measureText(s).width,0);x.restore();return w;}
+function runs(parts,cx,y,font,ls=0){x.save();x.font=font;x.letterSpacing=ls+'px';x.textAlign='left';
+  let X=cx-textW(parts,font,ls)/2;
+  for(const[s,c]of parts){x.fillStyle=c;x.fillText(s,X,y);X+=x.measureText(s).width;}x.restore();}
+// a torn white strip holding one or two lines of text, centred; "*word*" is brass
+function parse(s){return s.split(/(\*[^*]+\*)/).filter(Boolean).map(p=>p[0]==='*'?[p.slice(1,-1),C.brassD]:[p,C.ink]);}
+function strip(t,t0,lines,cy,{size=64,id=1,fill=C.white}={}){const font=`800 ${size}px MS`,ls=lines.map(parse);
+  const w=Math.max(...ls.map(p=>textW(p,font)))+110,lh=size*1.18,h=lh*lines.length+size*.9;
+  pop(t,t0,()=>{piece(rect(540-w/2,cy-h/2,w,h),fill,id,{amp:3});
+    ls.forEach((p,i)=>runs(p,540,cy-h/2+size*.45+lh*(i+.82),font));},{bx:540,by:cy});}
+function chip(t,t0,s,cy,{id=2,fill=C.carbon,col=C.parch,size=28}={}){const font=`700 ${size}px MR`,w=textW([[s,col]],font,4)+70;
+  pop(t,t0,()=>{piece(rect(540-w/2,cy-34,w,68),fill,id,{amp:2});runs([[s,col]],540,cy+size*.36,font,4);},{bx:540,by:cy});}
+
+// ---------- pieces ----------
+function house(cx,base,w,h,wall,roof,door,id,{chimney=false}={}){const X=cx-w/2,Y=base-h;
+  if(chimney)piece(rect(X+w*.62,Y-h*.42,w*.12,h*.3),C.brick,id+5,{amp:2});
+  piece(rect(X,Y,w,h),wall,id,{amp:2.5});
+  piece([[X-w*.1,Y+6],[cx,Y-h*.5],[X+w*1.1,Y+6]],roof,id+1,{amp:3});
+  piece(rect(cx-w*.11,base-h*.46,w*.22,h*.46),door,id+2,{amp:2});
+  const ww=w*.2;piece(rect(X+w*.12,Y+h*.18,ww,ww),C.brassL,id+3,{amp:1.5,shadow:false});
+  piece(rect(X+w*.68,Y+h*.18,ww,ww),C.brassL,id+4,{amp:1.5,shadow:false});}
+function tree(cx,base,s,id){piece(rect(cx-9*s,base-80*s,18*s,80*s),C.brassD,id,{amp:1.5});
+  piece([[cx,base-260*s],[cx+85*s,base-70*s],[cx-85*s,base-70*s]],C.moss,id+1,{amp:4});
+  piece([[cx,base-320*s],[cx+65*s,base-170*s],[cx-65*s,base-170*s]],C.mossL,id+2,{amp:4});}
+function hill(y,c,id){piece([[-40,y+40],[260,y-30],[620,y+10],[1120,y-50],[1120,H+40],[-40,H+40]],c,id,{amp:6});}
+function pin(cx,cy,label,id,{hot=false,side=1}={}){
+  piece(rect(cx-5,cy-70,10,70),C.ink,id,{amp:1,grain:false});
+  piece(circle(cx,cy-86,hot?34:26),hot?C.brass:C.brick,id+1,{amp:2});
+  piece(circle(cx,cy-86,hot?12:9,12),C.white,id+2,{amp:1,shadow:false});
+  const font=`800 ${hot?44:34}px MS`,w=textW([[label,C.ink]],font)+44,lx=side>0?cx+30:cx-30-w;
+  piece(rect(lx,cy-58,w,hot?64:54),C.white,id+3,{amp:2});
+  runs([[label,hot?C.brassD:C.ink]],lx+w/2,cy-58+(hot?46:39),font);}
+
+// ---------- scenes ----------
+function street(t){ground(C.paper);
+  const H2=(y,c,id,s)=>pop(t,s,()=>hill(y,c,id),{bx:540,by:H,from:'slide'});
+  H2(1080,C.mossL,10,0.0);H2(1200,C.moss,11,0.15);
+  pop(t,0.3,()=>{piece(rect(-40,1300,1160,250),C.mossL,12,{amp:5});piece(rect(-40,1530,1160,80),C.white,13,{amp:4});
+    piece(rect(-40,1600,1160,400),C.slate,14,{amp:5});for(let i=0;i<6;i++)piece(rect(30+i*190,1720,110,22),C.brassL,15+i,{amp:2,shadow:false});},{bx:540,by:H,from:'slide'});
+  pop(t,0.55,()=>house(215,1310,280,270,C.parch,C.slate,C.moss,20,{chimney:true}),{bx:215,by:1310});
+  pop(t,0.8,()=>house(545,1320,310,350,C.brassL,C.carbon,C.brick,30),{bx:545,by:1320});
+  pop(t,1.05,()=>house(870,1310,270,250,C.white,C.brick,C.slate,40,{chimney:true}),{bx:870,by:1310});
+  pop(t,1.2,()=>tree(60,1340,.9,50),{bx:60,by:1340});pop(t,1.3,()=>tree(1030,1340,.8,55),{bx:1030,by:1340});
+  pop(t,0.9,()=>piece(circle(840,560,110),C.brass,90,{amp:4}),{bx:840,by:900,from:'slide'});
+  strip(t,1.5,['Every street in Ottawa','has a *story.*'],330,{size:70,id:60});}
+
+function title(t,t0){ground(C.parch);
+  // a stack of torn layers behind the title card
+  pop(t,t0+0.05,()=>piece([[90,620],[990,560],[1010,1330],[70,1380]],C.mossL,100,{amp:6}),{bx:540,by:960});
+  pop(t,t0+0.15,()=>piece([[120,660],[960,640],[980,1290],[100,1310]],C.white,101,{amp:5}),{bx:540,by:960});
+  chip(t,t0+0.35,'A NEW SERIES',760,{id:102,fill:C.brass,col:C.ink});
+  pop(t,t0+0.5,()=>runs([['PAPER',C.ink]],540,960,'800 190px MS',6),{bx:540,by:900});
+  pop(t,t0+0.68,()=>runs([['OTTAWA',C.brassD]],540,1150,'800 170px MS',6),{bx:540,by:1090});
+  pop(t,t0+0.9,()=>piece([[260,1195],[820,1185],[815,1215],[262,1222]],C.brass,103,{amp:3}),{bx:540,by:1205});
+  pop(t,t0+1.1,()=>house(540,1630,170,150,C.brassL,C.carbon,C.brick,110,{chimney:true}),{bx:540,by:1630});
+  pop(t,t0+1.0,()=>{piece(rect(-40,1620,1160,320),C.moss,115,{amp:5});},{bx:540,by:H,from:'slide'});}
+
+function map(t,t0){ground(C.paper);
+  // land, the Ottawa River across the top, the Rideau Canal through the middle (stylised, not to scale)
+  pop(t,t0+0.05,()=>piece([[40,560],[1040,470],[1050,1560],[30,1600]],C.mossL,200,{amp:7}),{bx:540,by:1000});
+  pop(t,t0+0.2,()=>{piece([[-40,520],[300,610],[640,560],[1120,470],[1120,600],[640,690],[300,740],[-40,660]],C.river,201,{amp:6});
+    piece([[-40,575],[300,665],[640,615],[1120,525],[1120,545],[640,640],[300,690],[-40,600]],C.riverL,202,{amp:3,shadow:false});},{bx:540,by:600,from:'drop'});
+  pop(t,t0+0.35,()=>piece([[520,700],[545,700],[600,1050],[640,1420],[612,1424],[572,1052]],C.river,203,{amp:2}),{bx:560,by:1000});
+  pop(t,t0+0.3,()=>piece(rect(80,1640,920,200),C.white,204,{amp:4}),{bx:540,by:1740,from:'slide'});
+  pop(t,t0+0.5,()=>{x.save();x.font='700 26px MR';x.fillStyle=C.mute;x.textAlign='center';x.letterSpacing='5px';
+    x.fillText('OTTAWA RIVER',360,600);x.restore();},{bx:360,by:590});
+  strip(t,t0+0.4,['One neighbourhood','at a *time.*'],300,{size:66,id:210});
+  const P=[[215,980,'Kanata',1],[560,1040,'The Glebe',1],[300,1320,'Barrhaven',1],[700,1400,'Riverside South',1],[850,880,'Orléans',-1,true]];
+  P.forEach(([px,py,l,side,hot],i)=>pop(t,t0+1.2+i*0.75,()=>pin(px,py,l,220+i*10,{hot,side}),{bx:px,by:py,from:'drop'}));
+  pop(t,t0+5.2,()=>runs([['Your neighbourhood could be next.',C.ink]],540,1760,'700 40px MR'),{bx:540,by:1745});}
+
+function orleans(t,t0){ground(C.paper);
+  pop(t,t0+0.25,()=>piece(circle(820,760,95),C.brass,300,{amp:4}),{bx:820,by:1000,from:'slide'});
+  pop(t,t0+0.05,()=>hill(1000,C.mossL,301),{bx:540,by:H,from:'slide'});
+  pop(t,t0+0.4,()=>house(250,1050,210,190,C.parch,C.slate,C.moss,310,{chimney:true}),{bx:250,by:1050});
+  pop(t,t0+0.55,()=>house(520,1040,240,250,C.brassL,C.carbon,C.brick,320),{bx:520,by:1040});
+  pop(t,t0+0.7,()=>house(800,1050,200,180,C.white,C.brick,C.slate,330),{bx:800,by:1050});
+  pop(t,t0+0.85,()=>tree(980,1080,.7,340),{bx:980,by:1080});
+  // the beach and the river, with waves that shift every pose
+  pop(t,t0+0.15,()=>{piece(rect(-40,1180,1160,180),C.sand,350,{amp:5});
+    piece(rect(-40,1340,1160,600),C.river,351,{amp:6});
+    for(let row=0;row<4;row++)for(let i=0;i<5;i++){const off=((t*40+row*70)%220);
+      piece(rect(-120+i*260+off,1430+row*110,140,16),C.riverL,360+row*10+i,{amp:2,shadow:false});}},{bx:540,by:H,from:'slide'});
+  chip(t,t0+0.3,'PAPER OTTAWA  ·  EPISODE 1',300,{id:370});
+  strip(t,t0+0.5,['First stop:','*Orléans.*'],470,{size:84,id:371});}
+
+function endcard(t,t0){ground(C.carbon);
+  pop(t,t0+0.3,()=>{const w=860,h=w*184/1536;x.drawImage(LOGO,540-w/2,820-h/2,w,h);},{bx:540,by:820});
+  pop(t,t0+0.6,()=>runs([['yourhomeinottawa.ca',C.brassL]],540,1010,'700 52px MR'),{bx:540,by:995});
+  pop(t,t0+0.75,()=>runs([['613-799-9022',C.parch]],540,1085,'600 40px MR'),{bx:540,by:1070});
+  pop(t,t0+0.5,()=>{piece(rect(330,640,420,10),C.brass,400,{amp:2,shadow:false});piece(rect(330,1150,420,10),C.brass,401,{amp:2,shadow:false});},{bx:540,by:900});
+  pop(t,t0+0.9,()=>runs([['Paper Ottawa. New episodes soon.',C.parch]],540,1290,'800 50px MS'),{bx:540,by:1275});
+  pop(t,t0+1.0,()=>runs([['The Campbell-Maric Group · eXp Realty, Brokerage',C.mute]],540,1760,'600 26px MR'),{bx:540,by:1750});}
+
+const LOGO=new Image();LOGO.src='../common/lockup-light.png';
+function wipe(t,{t:t0,c},i){const p=(t-t0)/0.8;if(p<=0||p>=1)return;
+  const y=p<.5?H*(1-ease(p*2)):-H*ease((p-.5)*2);
+  piece([[-60,y-30],[1140,y+20],[1140,y+H+40],[-60,y+H+10]],c,500+i,{amp:14,grain:true});}
+
+window.seek=function(tIn){const t=Math.floor(tIn*12)/12;BOIL=Math.floor(tIn*12);
+  const [a,b,c,d]=WIPES.map(w=>w.t+0.4);
+  if(t<a)street(t);else if(t<b)title(t,a);else if(t<c)map(t,b);else if(t<d)orleans(t,c);else endcard(t,d);
+  WIPES.forEach((w,i)=>wipe(t,w,i));};
+window.ready=Promise.all([document.fonts.load('800 84px MS'),document.fonts.load('700 30px MR'),
+  new Promise(r=>{if(LOGO.complete)r();else{LOGO.onload=r;LOGO.onerror=r;}})]).then(()=>window.seek(0));
+</script></body></html>
